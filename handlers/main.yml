@@ -1,0 +1,9 @@
+---
+- name: restart apache2
+  service:
+    name: '{{ apache2__service_name }}'
+    state: 'restarted'
+
+- name: test apache configuration and restart
+  command: apachectl configtest
+  notify: [ 'restart apache2' ]
