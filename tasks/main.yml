@@ -1,0 +1,78 @@
+---
+- name: Include the OS specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution }}.yml"
+        - "{{ ansible_os_family }}.yml"
+      skip: true
+  tags: ['apache2']
+
+- name: Install the latest version of Apache2 program
+  become: yes
+  package:
+    name: '{{ item }}'
+    state: latest
+  with_items: '{{ apache2__packages_name }}'
+  tags: ['apache2']
+
+- name: Get installed version of Apache.
+  shell: "apache2 -v"
+  changed_when: false
+  check_mode: no
+  register: _apache2__version
+  tags: ['apache2']
+
+- name: Assert required variables
+  assert:
+    that:
+      - apache2__server_signature in ['On', 'Off', 'EMail']
+      - apache2__server_tokens in ['Major', 'Minor', 'Min', 'Minimal', 'Prod', 'ProductOnly', 'OS', 'Full']
+      - apache2__trace_enable|lower in ['on', 'off', 'extended']
+  tags: ['apache2']
+
+- name: Create _apache2__version variable.
+  set_fact:
+    apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] }}"
+  tags: ['apache2']
+
+# - name: Configure Apache listen ports.
+#   template:
+#     src: 'apache2.conf.j2'
+#     dest: '{{ apache2__server_root }}/ports.conf'
+#     owner: 'root'
+#     group: 'root'
+#     mode: '0644'
+#     validate: 'apache2 -t -f {{ apache2__main_configuration }}'
+#   with_items: "{{ apache2__listen }}"
+#   notify: [ 'test apache configuration and restart' ]
+#   tags: ['apache2']
+
+- name: Include mods subtasks
+  include: mods.yml
+  tags: ['apache2']
+
+- name: Include virtuals hosts subtasks
+  include: sites.yml
+  tags: ['apache2']
+
+- name: Setup {{ apache2__main_configuration }}
+  become: yes
+  template:
+    src:    'apache2.conf.j2'
+    dest:   '{{ apache2__main_configuration }}'
+    owner:  'root'
+    group:  'root'
+    mode:   '0644'
+    #validate: 'source {{ apache2__server_root}}/envars apache2 -t -f %s'
+  notify: [ 'test apache configuration and restart' ]
+  tags: ['apache2']
+
+- name: Ensure apache is started and enabled on boot
+  become: yes
+  service:
+    name: "{{ apache2__service_name }}"
+    state: started
+    enabled: yes
+  changed_when: False
+  tags: ['apache2']

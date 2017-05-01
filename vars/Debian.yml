@@ -1,0 +1,8 @@
+---
+apache2__packages_name:
+  - apache2
+  - apache2-utils
+
+apache2__server_root: /etc/apache2
+
+apache2__service_name: apache2
