@@ -8,6 +8,7 @@
 - name: List enabled sites
   find:
     paths: "{{ apache2__server_root }}/sites-enabled/"
+    file_type: link
   register: enabled_sites
   tags: ['apache2']
 
