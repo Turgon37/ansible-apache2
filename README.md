@@ -3,6 +3,9 @@ Ansible Role Apache2
 
 :warning: This role is under development
 
+Require Ansible >= 2.3
+
+
 This roles configures an instance of Apache2 daemon
 
 ## OS Family
@@ -57,35 +60,39 @@ Each virtual host must be declared with a vhost block. You can put a vhost block
 * apache2__group_virtual_hosts
 * apache2__host_virtual_hosts
 
+By default each virtual host listen on '*' and on the default port identified according to the HTTP(s) status.
+If SSL Engine is 'ON' it uses 443, otherwise 80.
+
+
 Each vhost block must be put in a dict where the key will be the filename of the vhost configuration. Then each vhost must be a dict which can contains theses variables :
 
-| Name                        | Type                      | Description                                                                             |
-| --------------------------- | --------------------------| ----------------------------------------------------------------------------------------|
-| hosts                       | array of string/dict      | list of interface on which the vhost will listen                                        |
-| hosts[]                     | string                    | if an item of the list is a string it will be interpreted as "X.X.X.X:X"                |
-| hosts[].ip                  | string                    | if an item of the list is a dict with 'ip' key, it will be interpreted as "ip:port"     |
-| hosts[].port                | int                       | contains the port to use, if not set, it will be deducted from HTTP protocol (see above)|
-| servername                  | string                    | the host of the vhost                                                                   |
-| serveralias                 | string                    | the hostname alias                                                                      |
-| serveradmin                 | string                    | the optionnal administrator email address                                               |
-| documentroot                | string                    | The path to the document root folder                                                    |
-| allow_override              | string                    | The AllowOverride directive                                                             |
-| allow_override_list         | string                    | The AllowOverrideList directive                                                         |
-| options                     | string                    | The Option directive                                                                    |
-| headers                     | array                     | Array of Header directive                                                               |
-| files_match                 | array of dict (see below) | Contains FileMatch definition, each one must be a dict with following keys              |
-| files_match[].regexp        | string                    | The regular expression that triggers the file match                                     |
-| files_match[].actions       | array of string           | The list of Apache directive to execute when this file match is triggered               |
-| extra_parameters            | array of string           | Any extra Apache directive                                                              |
-| https                       | dict                      | see below for all https subkey                                                          |
-| https.enabled               | boolean                   | True by default, can be use to disable https and preserve configurations string         |
-| https.certificate_chain_file| string                    | The path to the certificate chain                                                       |
-| https.verify_client         | string                    | The type of client certificate verification to perform                                  |
-| https.verify_client_depth   | int                       | The maximum depth for client certificate verification                                   |
-| https.ca_certificate_path   | string                    | The path to the CA certificate directory                                                |
-| https.ca_certificate_file   | string                    | The path to the CA certificate file                                                     |
-| https.crl_path              | string                    | The path to the CRL folder                                                              |
-| https.crl_file              | string                    | The path to the CRL file                                                                |
+| Name                        | Type                          | Description                                                                                                                                                       |
+| --------------------------- | ------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hosts                       | string or array of string/dict| list of interface on which the vhost will listen                                                                                                                  |
+| hosts[]                     | string                        | if an item of the hosts list is a string it will be interpreted as "IP:PORT" or "X.X.X.X:X"                                                                       |
+| hosts[].ip                  | string                        | if an item of the hosts list is a dict with 'ip' key, it will be interpreted as "IP"                                                                              |
+| hosts[].port                | int                           | if an item of the hosts list is a dict with 'port' key, it will be used as listen port. If this key is not set, it will be deducted from HTTP protocol (see above)|
+| servername                  | string                        | the host of the vhost                                                                                                                                             |
+| serveralias                 | string                        | the hostname alias                                                                                                                                                |
+| serveradmin                 | string                        | the optionnal administrator email address                                                                                                                         |
+| documentroot                | string                        | The path to the document root folder                                                                                                                              |
+| allow_override              | string                        | The AllowOverride directive                                                                                                                                       |
+| allow_override_list         | string                        | The AllowOverrideList directive                                                                                                                                   |
+| options                     | string                        | The Option directive                                                                                                                                              |
+| headers                     | array                         | Array of Header directive                                                                                                                                         |
+| files_match                 | array of dict (see below)     | Contains FileMatch definition, each one must be a dict with following keys                                                                                        |
+| files_match[].regexp        | string                        | The regular expression that triggers the file match                                                                                                               |
+| files_match[].actions       | array of string               | The list of Apache directive to execute when this file match is triggered                                                                                         |
+| extra_parameters            | array of string               | Any extra Apache directive                                                                                                                                        |
+| https                       | dict                          | see below for all https subkey                                                                                                                                    |
+| https.enabled               | boolean                       | True by default, can be use to disable https and preserve configurations string                                                                                   |
+| https.certificate_chain_file| string                        | The path to the certificate chain                                                                                                                                 |
+| https.verify_client         | string                        | The type of client certificate verification to perform                                                                                                            |
+| https.verify_client_depth   | int                           | The maximum depth for client certificate verification                                                                                                             |
+| https.ca_certificate_path   | string                        | The path to the CA certificate directory                                                                                                                          |
+| https.ca_certificate_file   | string                        | The path to the CA certificate file                                                                                                                               |
+| https.crl_path              | string                        | The path to the CRL folder                                                                                                                                        |
+| https.crl_file              | string                        | The path to the CRL file                                                                                                                                          |
 
 
 ### Example
