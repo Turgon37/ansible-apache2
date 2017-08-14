@@ -16,7 +16,8 @@ This role is available for Debian
 
 At this day the role can be used to configure :
 
-  * Apache2 main server
+  * Apache2 main server configuration file
+  * Listens directives to restrict apache listening to vhost defined ports only
   * multiple virtual hosts
   * list of enabled/disable apaches modules
 
