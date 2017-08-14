@@ -8,6 +8,14 @@
       skip: true
   tags: ['apache2']
 
+- name: Assert required variables
+  assert:
+    that:
+      - apache2__server_signature in ['On', 'Off', 'EMail']
+      - apache2__server_tokens in ['Major', 'Minor', 'Min', 'Minimal', 'Prod', 'ProductOnly', 'OS', 'Full']
+      - apache2__trace_enable|lower in ['on', 'off', 'extended']
+  tags: ['apache2']
+
 - name: Install the latest version of Apache2 program
   become: yes
   package:
@@ -23,30 +31,14 @@
   register: _apache2__version
   tags: ['apache2']
 
-- name: Assert required variables
-  assert:
-    that:
-      - apache2__server_signature in ['On', 'Off', 'EMail']
-      - apache2__server_tokens in ['Major', 'Minor', 'Min', 'Minimal', 'Prod', 'ProductOnly', 'OS', 'Full']
-      - apache2__trace_enable|lower in ['on', 'off', 'extended']
-  tags: ['apache2']
-
-- name: Create _apache2__version variable.
+- name: Create _apache2__version variable
   set_fact:
     apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] }}"
   tags: ['apache2']
 
-# - name: Configure Apache listen ports.
-#   template:
-#     src: 'apache2.conf.j2'
-#     dest: '{{ apache2__server_root }}/ports.conf'
-#     owner: 'root'
-#     group: 'root'
-#     mode: '0644'
-#     validate: 'apache2 -t -f {{ apache2__main_configuration }}'
-#   with_items: "{{ apache2__listen }}"
-#   notify: [ 'test apache configuration and restart' ]
-#   tags: ['apache2']
+- name: Include ports subtasks
+  include: ports.yml
+  tags: ['apache2']
 
 - name: Include mods subtasks
   include: mods.yml

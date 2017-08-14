@@ -2,12 +2,18 @@
 # {{ ansible_managed }}
 #
 
-Listen 80
+{% for listen in _apache2__listen_http | d([80]) | unique %}
+Listen {{ listen }}
+{% endfor %}
 
 <IfModule ssl_module>
-    Listen 443
+{% for listen in _apache2__listen_https | d([443]) | unique %}
+    Listen {{ listen }}
+{% endfor %}
 </IfModule>
 
 <IfModule mod_gnutls.c>
-    Listen 443
+{% for listen in _apache2__listen_https | d([443]) | unique %}
+    Listen {{ listen }}
+{% endfor %}
 </IfModule>

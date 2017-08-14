@@ -7,7 +7,7 @@
 {%   if vhost.hosts is string %}
 <VirtualHost {{ vhost.hosts }}>
 {%   elif vhost.hosts is iterable %}
-<VirtualHost {% for host in vhost.hosts %} {% if host is string %}{{ host }}{% elif host is mapping%}{{ host.ip }}:{{ host.port | d(443 if vhost.https is defined else 80) }}{% endif %}{% endfor %}>
+<VirtualHost {% for host in vhost.hosts %} {% if host is string %}{{ host }}{% elif host is mapping %}{{ host.ip }}:{{ host.port | d(443 if vhost.https is defined else 80) }}{% endif %}{% endfor %}>
 {%   endif %}
 {% else %}
 <VirtualHost *:{{ 443 if vhost.https is defined else 80 }}>
