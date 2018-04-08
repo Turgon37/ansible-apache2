@@ -21,6 +21,9 @@ apache2__service_restartable: True
 # Path to the must restart stamp file
 apache2__service_restart_stamp_file: '/var/local/apache2-must-restart-stamp'
 
+# Path to systemd override directory
+apache2__systemd_override_options_dir: '/etc/systemd/system/{{ apache2__service_name }}.service.d/'
+
 # Service user configuration
 apache2__user_runas: www-data
 apache2__group_runas: www-data
@@ -37,7 +40,8 @@ apache2__main_configuration_file: '{{ apache2__server_root }}/apache2.conf'
 apache2__ports_configuration_file: '{{ apache2__server_root }}/ports.conf'
 
 # This directory contains symbolic links of enabled modules
-apache2__module_load_include_directory: '{{ apache2__server_root }}/mods-enabled'
+apache2__enabled_module_include_directory: '{{ apache2__server_root }}/mods-enabled'
+apache2__available_module_include_directory: '{{ apache2__server_root }}/mods-available'
 
 # PidFile: The file in which the server should record its process
 # identification number when it starts.

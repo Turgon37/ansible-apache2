@@ -37,7 +37,8 @@
     state: directory
   with_items:
     - '{{ apache2__server_root }}'
-    - '{{ apache2__module_load_include_directory }}'
+    - '{{ apache2__available_module_include_directory }}'
+    - '{{ apache2__enabled_module_include_directory }}'
 
 - name: Ensure mutex directory exists
   file:
@@ -62,13 +63,11 @@
     mode:  0644
   notify: [ 'restart-apache2' ]
 
-#- name: Include mods subtasks
-  #include: mods.yml
-  #tags: ['apache2']
+- name: Include mods subtasks
+  import_tasks: configure-mods.yml
 
 #- name: Include virtuals hosts subtasks
-  #include: sites.yml
-  #tags: ['apache2']
+  #import_tasks: configure-sites.yml
 
 - name: Setup main configuration file
   template:
