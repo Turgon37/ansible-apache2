@@ -1,0 +1,20 @@
+{#
+ # Filter for parameters that accepts
+ # boolean and string values
+ #
+ # @param value : the value of the parameter
+ # @return string
+ #}
+{%- macro stringOrBool(value) -%}
+{{ value if value is string else bool(value) }}
+{%- endmacro -%}
+
+{#
+ # Produce a boolean value in apache format
+ #
+ # @param value : the value of the boolean
+ # @return string
+ #}
+{%- macro bool(value) -%}
+{{ value|bool|ternary('On', 'Off') }}
+{%- endmacro -%}

@@ -1,0 +1,48 @@
+{%- import '_directives.j2' as _directives -%}
+{#
+ # Router for sections block
+ #
+ # @param section : specification of a section to produce
+ # @return string
+ #}
+{%- macro section(sec) -%}
+{%    if sec.type == 'directory' %}
+{{ directory(sec.path, sec.directives) }}
+{%    elif sec.type == 'filesmatch' %}
+{{ filesmatch(sec.regex, sec.directives) }}
+{%    else %}
+{{ 'The section type "'~sec.type~'" is not implemented.'~0/0 }} {# ZeroDivisionError: #}
+{%    endif %}
+{%- endmacro -%}
+
+
+{#
+ # Produce a Directory section
+ #
+ # @param path : the path to which the directory will apply
+ # @param directives : the list of directives
+ # @return string
+ #}
+{%- macro directory(path, directives) -%}
+<Directory "{{ path }}">
+{% for dir in directives %}
+{{   _directives.directive(dir)|indent(2, true) }}
+{% endfor %}
+</Directory>
+{%- endmacro -%}
+
+
+{#
+ # Produce a FilesMatch section
+ #
+ # @param path : the path to which the directory will apply
+ # @param directives : the list of directives
+ # @return string
+ #}
+{%- macro filesmatch(regex, directives) -%}
+<FilesMatch "{{ regex }}">
+{% for dir in directives %}
+{{   _directives.directive(dir)|indent(2, true) }}
+{% endfor %}
+</FilesMatch>
+{%- endmacro -%}

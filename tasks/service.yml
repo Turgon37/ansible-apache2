@@ -1,0 +1,26 @@
+---
+
+- name: Ensure Apache2 daemon is started and enabled on boot
+  service:
+    name:    '{{ apache2__service_name }}'
+    enabled: '{{ apache2__service_enabled|bool }}'
+    state:   "{{ apache2__service_enabled|bool|ternary('started', 'stopped') }}"
+
+# restart feature
+- name: Test if Apache2 need to be restart
+  stat:
+    path: '{{ apache2__service_restart_stamp_file }}'
+  register: _apache2__restart_file
+  check_mode: False
+
+- name: Restart Apache2 if needed and allowed
+  service:
+    name:  '{{ apache2__service_name }}'
+    state: restarted
+  when: apache2__service_enabled|bool and apache2__service_restartable|bool and _apache2__restart_file.stat.exists
+
+- name: Remove stamp file if Apache2 daemon is disabled
+  file:
+    path:  '{{ apache2__service_restart_stamp_file }}'
+    state: absent
+  when: not apache2__service_enabled|bool

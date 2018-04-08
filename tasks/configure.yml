@@ -1,0 +1,81 @@
+---
+
+- name: Get installed version of Apache.
+  command: /usr/bin/env apache2 -v
+  changed_when: False
+  check_mode: False
+  register: _apache2__version
+
+- name: Create _apache2__version variable
+  set_fact:
+    apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] }}"
+
+- name: "Ensure service group '{{ apache2__group_runas }}' is present"
+  group:
+    name:   '{{ apache2__group_runas }}'
+    system: yes
+    state:  present
+  notify: [ 'restart-apache2' ]
+
+- name: "Ensure service user '{{ apache2__user_runas }}' is present"
+  user:
+    name:       '{{ apache2__user_runas }}'
+    group:      '{{ apache2__group_runas }}'
+    shell:      /sbin/nologin
+    home:       /nonexistent
+    createhome: no
+    system:     yes
+    state:      present
+  notify: [ 'restart-apache2' ]
+
+- name: Ensure configuration directories exists
+  file:
+    path:  '{{ item }}'
+    owner: root
+    group: root
+    mode:  0755
+    state: directory
+  with_items:
+    - '{{ apache2__server_root }}'
+    - '{{ apache2__module_load_include_directory }}'
+
+- name: Ensure mutex directory exists
+  file:
+    path:  '{{ apache2__mutex_directory }}'
+    owner: '{{ apache2__user_runas }}'
+    mode:  0755
+    state: directory
+
+- name: Ensure logging directory exists
+  file:
+    path:  '{{ apache2__log_directory }}'
+    owner: root
+    mode:  0750
+    state: directory
+
+- name: Configure listen ports
+  template:
+    src:   ports.conf.j2
+    dest:  '{{ apache2__server_root }}/ports.conf'
+    owner: root
+    group: root
+    mode:  0644
+  notify: [ 'restart-apache2' ]
+
+#- name: Include mods subtasks
+  #include: mods.yml
+  #tags: ['apache2']
+
+#- name: Include virtuals hosts subtasks
+  #include: sites.yml
+  #tags: ['apache2']
+
+- name: Setup main configuration file
+  template:
+    src:   apache2.conf.j2
+    dest:  '{{ apache2__main_configuration_file }}'
+    owner: root
+    group: root
+    mode:  0644
+    validate: '/usr/bin/env apache2 -t -f %s'
+  notify: [ 'restart-apache2' ]
