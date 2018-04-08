@@ -1,0 +1,7 @@
+---
+
+- name: Install Apache2 packages
+  package:
+    name:  '{{ item }}'
+    state: present
+  with_items: '{{ apache2__packages_names }}'

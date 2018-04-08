@@ -1,9 +1,16 @@
 ---
-- name: restart apache2
-  service:
-    name: '{{ apache2__service_name }}'
-    state: 'restarted'
+# handlers file for apache2
 
-- name: test apache configuration and restart
-  command: apachectl configtest
-  notify: [ 'restart apache2' ]
+- name: restart-apache2-daemon
+  service:
+    name:  '{{ apache2__service_name }}'
+    state: restarted
+  when: apache2__service_enabled|bool and apache2__service_restartable|bool
+  listen: restart-apache2
+
+- name: mark-docker-daemon-to-restart
+  file:
+    path:  '{{ apache2__service_restart_stamp_file }}'
+    state: touch
+  when: apache2__service_enabled|bool and not apache2__service_restartable|bool
+  listen: restart-apache2

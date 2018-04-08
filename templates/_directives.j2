@@ -1,0 +1,21 @@
+{#
+ # Router for directives
+ #
+ # @param section : specification of a section to produce
+ # @return string
+ #}
+{%- macro directive(line) -%}
+{%- set name = line.keys()[0] -%}
+{%- set value = line.values()[0] -%}
+{%-   if name == 'options' -%}
+Options {{ value|join(' ') }}
+{%-   elif name == 'allow_override' -%}
+AllowOverride {{ value|join(' ') }}
+{%-   elif name == 'allow_override_list' -%}
+AllowOverride {{ value|join(' ') }}
+{%-   elif name == 'require' -%}
+Require {{ value }}
+{%-   else -%}
+{{ 'The directive name "'~name~'" is not implemented.' }}
+{%-   endif -%}
+{%- endmacro -%}
