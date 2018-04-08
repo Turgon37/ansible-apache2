@@ -1,4 +1,24 @@
 ---
+- name: Ensure systemd override directory is created
+  file:
+    path:  '{{ apache2__systemd_override_options_dir }}'
+    state: directory
+  when: ansible_service_mgr == 'systemd'
+
+- name: Install systemd options override file
+  template:
+    src:  systemd.service.d.j2
+    dest: '{{ apache2__systemd_override_options_dir }}/override.conf'
+  when: ansible_service_mgr == 'systemd'
+  notify: ['restart-apache2']
+  register: _apache2__service
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  when: ansible_service_mgr == 'systemd' and _apache2__service is changed
+
+- meta: flush_handlers
 
 - name: Ensure Apache2 daemon is started and enabled on boot
   service:

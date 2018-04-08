@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+[Service]
+{% if not apache2__service_restartable|bool %}
+# Remove must restart stamp file
+ExecStartPre=-/usr/bin/env rm -f {{ apache2__service_restart_stamp_file }}
+{% endif %}
