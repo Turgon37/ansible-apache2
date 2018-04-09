@@ -1,13 +1,14 @@
 ---
+
 - name: List available mods
   find:
-    paths:     '{{ apache2__available_module_include_directory }}'
+    paths:     '{{ apache2__available_modules_include_directory }}'
     file_type: any
   register: _apache2__available_mods
 
 - name: List enabled mods
   find:
-    paths:     '{{ apache2__enabled_module_include_directory }}'
+    paths:     '{{ apache2__enabled_modules_include_directory }}'
     file_type: any
   register: _apache2__enabled_mods
 
@@ -27,8 +28,8 @@
 
 - name: Enable wanted Apache mods
   file:
-    src:   '{{ apache2__available_module_include_directory }}/{{ item }}'
-    dest:  '{{ apache2__enabled_module_include_directory }}/{{ item }}'
+    src:   '{{ apache2__available_modules_include_directory }}/{{ item }}'
+    dest:  '{{ apache2__enabled_modules_include_directory }}/{{ item }}'
     state: link
   with_items: '{{ apache2__mods_enabled }}'
   when: item not in _apache2__enabled_mods.files|map(attribute='path')|map('basename')

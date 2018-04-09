@@ -1,0 +1,51 @@
+---
+
+- name: Check userparameter prerequisites
+  assert:
+    that:
+      - apache2__virtualhost is defined
+      - apache2__virtualhost.name is defined
+    msg: apache2__virtualhost must be defined with specifications and apache2__virtualhost.name must contains the name of the file
+  tags: ['always']
+
+- name: Init some value
+  set_fact:
+    _apache2__available_sites_include_directory: "{{ apache2__available_sites_include_directory|d(apache2__server_root|d('/etc/apache2')~'/sites-available') }}"
+    _apache2__enabled_sites_include_directory: "{{ apache2__enabled_sites_include_directory|d(apache2__server_root|d('/etc/apache2')~'/sites-enabled') }}"
+  tags: ['always']
+
+- name: Compute virtualhost final path
+  set_fact:
+    _apache2__virtualhost_path: "{{ _apache2__available_sites_include_directory }}/{{ apache2__virtualhost.name|replace(' ', '_') }}.conf"
+  tags: ['always']
+
+# Ensure required folder before the full apache2 role is applied
+
+- name: Ensure userparameters directories exists
+  file:
+    path:  '{{ item }}'
+    state: directory
+  with_items:
+    - '{{ _apache2__available_sites_include_directory }}'
+    - '{{ _apache2__enabled_sites_include_directory }}'
+  notify: [ 'restart-apache2' ]
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
+
+- name: 'Create Apache virtual host {{ apache2__virtualhost.name }}'
+  template:
+    src:   virtualhost.conf.j2
+    dest:  '{{ _apache2__virtualhost_path }}'
+    owner: root
+    group: root
+    mode:  0644
+  when: apache2__virtualhost.state|d('present') == 'present'
+  notify: [ 'restart-apache2' ]
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
+
+- name: 'Remove Apache virtual host {{ apache2__virtualhost.name }} if needed'
+  file:
+    path:  '{{ _apache2__virtualhost_path }}'
+    state: absent
+  when: apache2__virtualhost.state|d('present') != 'present'
+  notify: [ 'restart-apache2' ]
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']

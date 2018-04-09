@@ -8,7 +8,7 @@
         - '{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml'
         - '{{ ansible_distribution }}.yml'
         - '{{ ansible_os_family }}.yml'
-        - 'defaults.yml'
+        - defaults.yml
       skip: true
   tags: ['always']
 
@@ -23,3 +23,7 @@
 
 - import_tasks: service.yml
   tags: ['apache2', 'apache2-service']
+
+- include_tasks: facts.yml
+  when: apache2__facts|bool
+  tags: ['apache2', 'apache2-facts']

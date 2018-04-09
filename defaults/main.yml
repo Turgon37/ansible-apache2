@@ -2,6 +2,9 @@
 # Apache2 web server configuration
 # --------------------------------
 
+# Enable facts deploiement
+apache2__facts: True
+
 # The name of the apache2 package
 apache2__packages_names:
   - apache2
@@ -22,7 +25,13 @@ apache2__service_restartable: True
 apache2__service_restart_stamp_file: '/var/local/apache2-must-restart-stamp'
 
 # Path to systemd override directory
-apache2__systemd_override_options_dir: '/etc/systemd/system/{{ apache2__service_name }}.service.d/'
+apache2__systemd_override_options_dir: '/etc/systemd/system/{{ apache2__service_name }}.service.d'
+
+# Enable systemd private tmp
+apache2__service_private_tmp: True
+
+# Command to use for template validation
+apache2__configuration_validator: "/usr/bin/env bash -c 'source {{ apache2__server_root }}/envvars && apache2 -t -f %s'"
 
 # Service user configuration
 apache2__user_runas: www-data
@@ -40,8 +49,15 @@ apache2__main_configuration_file: '{{ apache2__server_root }}/apache2.conf'
 apache2__ports_configuration_file: '{{ apache2__server_root }}/ports.conf'
 
 # This directory contains symbolic links of enabled modules
-apache2__enabled_module_include_directory: '{{ apache2__server_root }}/mods-enabled'
-apache2__available_module_include_directory: '{{ apache2__server_root }}/mods-available'
+apache2__enabled_modules_include_directory: '{{ apache2__server_root }}/mods-enabled'
+# This directory contains configuration of available modules
+apache2__available_modules_include_directory: '{{ apache2__server_root }}/mods-available'
+
+# This directory contains symbolic links of enabled sites
+apache2__available_sites_include_directory: '{{ apache2__server_root }}/sites-available'
+# This directory contains configuration of available sites
+apache2__enabled_sites_include_directory: '{{ apache2__server_root }}/sites-enabled'
+
 
 # PidFile: The file in which the server should record its process
 # identification number when it starts.
@@ -158,21 +174,26 @@ apache2__options: None
 # directive.
 apache2__access_filename: .htaccess
 
+# List of directives sections name that can be applied to server/vhost level
+apache2__server_level_context_directives_name:
+  - server_admin
+  - document_root
+  - error_log
+  - custom_log
+
+# Default sections of the root of the configuration
 apache2__default_sections:
   # Sets the default security model of the Apache2 HTTPD server.
   - type: directory
     path: /
     directives:
-      - options:
-          - '{{ apache2__options }}'
-      - allow_override:
-          - '{{ apache2__allow_override }}'
-      - allow_override_list:
-          - '{{ apache2__allow_override_list }}'
+      - options: '{{ apache2__options }}'
+      - allow_override: '{{ apache2__allow_override }}'
+      - allow_override_list: '{{ apache2__allow_override_list }}'
       - require: all denied
   # The following lines prevent .htaccess and .htpasswd files from being
   # viewed by Web clients.
-  - type: filesmatch
+  - type: files_match
     regex: '^\.ht'
     directives:
       - require: all denied
@@ -190,10 +211,14 @@ apache2__host_mods_enabled: {}
 
 # Combine all enabled mods
 apache2__mods_enabled: '{{ apache2__global_mods_enabled
-                     | combine(apache2__group_mods_enabled)
-                     | combine(apache2__host_mods_enabled) }}'
+                     |combine(apache2__group_mods_enabled)
+                     |combine(apache2__host_mods_enabled) }}'
 
 ## Apache vhost
+# If true, all virtual hosts that are not in apache2__virtual_hosts
+# will be removed
+apache2__purge_virtual_hosts: True
+
 # This variable is intended to be used in Ansible’s global inventory.
 apache2__global_virtual_hosts: {}
 
@@ -203,8 +228,20 @@ apache2__group_virtual_hosts: {}
 
 # This variable is intended to be used in the inventory of hosts.
 apache2__host_virtual_hosts: {}
+#apache2__host_virtual_hosts:
+  #000-default:
+    #server_name: www.example.com
+    #server_admin: webmaster@localhost
+    #document_root: /var/www/html
+    #sections:
+      #- type: directory
+        #path: /var/www/html
+        #directives:
+          #- require: all granted
+    #error_log: '{{ apache2__log_directory }}/error.log'
+    #custom_log: '{{ apache2__log_directory }}/access.log combined'
 
 # Combned vhosts dicts
 apache2__virtual_hosts: '{{ apache2__global_virtual_hosts
-                     | combine(apache2__group_virtual_hosts)
-                     | combine(apache2__host_virtual_hosts) }}'
+                     |combine(apache2__group_virtual_hosts)
+                     |combine(apache2__host_virtual_hosts) }}'

@@ -2,13 +2,14 @@
 
 - name: Get installed version of Apache.
   command: /usr/bin/env apache2 -v
+  when: ansible_local.apache2 is not defined
   changed_when: False
   check_mode: False
   register: _apache2__version
 
 - name: Create _apache2__version variable
   set_fact:
-    apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] }}"
+    apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] if _apache2__version is not skipped else ansible_local.apache2.version_full }}"
 
 - name: "Ensure service group '{{ apache2__group_runas }}' is present"
   group:
@@ -37,8 +38,10 @@
     state: directory
   with_items:
     - '{{ apache2__server_root }}'
-    - '{{ apache2__available_module_include_directory }}'
-    - '{{ apache2__enabled_module_include_directory }}'
+    - '{{ apache2__available_modules_include_directory }}'
+    - '{{ apache2__enabled_modules_include_directory }}'
+    - '{{ apache2__available_sites_include_directory }}'
+    - '{{ apache2__enabled_sites_include_directory }}'
 
 - name: Ensure mutex directory exists
   file:
@@ -66,8 +69,8 @@
 - name: Include mods subtasks
   import_tasks: configure-mods.yml
 
-#- name: Include virtuals hosts subtasks
-  #import_tasks: configure-sites.yml
+- name: Include virtuals hosts subtasks
+  import_tasks: configure-sites.yml
 
 - name: Setup main configuration file
   template:
@@ -76,5 +79,5 @@
     owner: root
     group: root
     mode:  0644
-    validate: '/usr/bin/env apache2 -t -f %s'
+    validate: '{{ apache2__configuration_validator }}'
   notify: [ 'restart-apache2' ]
