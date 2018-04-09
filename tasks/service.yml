@@ -33,11 +33,10 @@
   register: _apache2__restart_file
   check_mode: False
 
-- name: Restart Apache2 if needed and allowed
-  service:
-    name:  '{{ apache2__service_name }}'
-    state: restarted
+- name: Trigger restart of Apache2 if needed and allowed
+  command: /bin/true
   when: apache2__service_enabled|bool and apache2__service_restartable|bool and _apache2__restart_file.stat.exists
+  notify: [ 'restart-apache2' ]
 
 - name: Remove stamp file if Apache2 daemon is disabled
   file:

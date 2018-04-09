@@ -8,8 +8,8 @@
 {%- macro section(sec) -%}
 {%    if sec.type == 'directory' %}
 {{ directory(sec.path, sec.directives) }}
-{%    elif sec.type == 'filesmatch' %}
-{{ filesmatch(sec.regex, sec.directives) }}
+{%    elif sec.type == 'files_match' %}
+{{ files_match(sec.regex, sec.directives) }}
 {%    else %}
 {{ 'The section type "'~sec.type~'" is not implemented.'~0/0 }} {# ZeroDivisionError: #}
 {%    endif %}
@@ -39,7 +39,7 @@
  # @param directives : the list of directives
  # @return string
  #}
-{%- macro filesmatch(regex, directives) -%}
+{%- macro files_match(regex, directives) -%}
 <FilesMatch "{{ regex }}">
 {% for dir in directives %}
 {{   _directives.directive(dir)|indent(2, true) }}

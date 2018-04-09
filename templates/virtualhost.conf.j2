@@ -1,0 +1,91 @@
+{%- import '_macros.j2' as macros -%}
+{%- import '_sections.j2' as sections -%}
+{%- import '_directives.j2' as directives -%}
+#
+# {{ ansible_managed }}
+#
+{% set vhost = apache2__virtualhost %}
+
+{% if vhost.hosts is not defined %}
+<VirtualHost *:{{ 443 if vhost.https is defined else 80 }}>
+{% else %}
+{%   if vhost.hosts is string %}
+<VirtualHost {{ vhost.hosts }}>
+{%   elif vhost.hosts is iterable %}
+<VirtualHost {% for host in vhost.hosts %} {% if host is string %}{{ host }}{% elif host is mapping %}{{ host.ip }}:{{ host.port | d(443 if vhost.https is defined else 80) }}{% endif %}{% endfor %}>
+{%   endif %}
+{% endif %}
+  ServerName {{ vhost.server_name }}
+{% if vhost.server_alias is defined %}
+  ServerAlias {{ vhost.server_alias }}
+{% endif %}
+
+{% if vhost.https is defined and (vhost.https.enabled | d(True) | bool)  %}
+  <IfModule ssl_module>
+    SSLEngine on
+    SSLCertificateFile {{ vhost.https.certificate_file }}
+    SSLCertificateKeyFile {{ vhost.https.certificate_key_file }}
+{%   if vhost.https.certificate_chain_file is defined %}
+    SSLCertificateChainFile {{ vhost.https.certificate_chain_file }}
+{%   endif %}
+{%   if vhost.https.verify_client is defined %}
+    #   Client Authentication (Type):
+    #   Client certificate verification type. Types are
+    #   none, optional, require and optional_no_ca.
+    SSLVerifyClient {{ vhost.https.verify_client }}
+{%     if vhost.https.verify_client_depth is defined %}
+    #   Depth is a number which specifies how deeply to verify
+    #   the certificate issuer chain before deciding the certificate
+    #   is not valid.
+    SSLVerifyDepth {{ vhost.https.verify_client_depth | d(10) }}
+{%     endif %}
+{%   endif %}
+{%   if vhost.https.ca_certificate_path is defined %}
+    #   Certificate Authority (CA):
+    #   Set the CA certificate verification path where to find CA
+    #   certificates for client authentication
+    SSLCACertificatePath {{ vhost.https.ca_certificate_path }}
+{%   endif %}
+{%   if vhost.https.ca_certificate_file is defined %}
+    #   Certificate Authority (CA):
+    #   Set the CA certificate verification path where to find CA
+    #   huge file containing all of client certificates (file must be PEM encoded)
+    SSLCACertificateFile {{ vhost.https.ca_certificate_file }}
+{%   endif %}
+{%   if vhost.https.crl_path is defined %}
+    #   Certificate Revocation Lists (CRL):
+    #   Set the CA revocation path where to find CA CRLs for client
+    #   authentication
+    #   Note: Inside SSLCARevocationPath you need hash symlinks
+    #                to point to the certificate files. Use the provided
+    #                Makefile to update the hash symlinks after changes.
+    SSLCARevocationPath {{ vhost.https.crl_path }}
+{%   endif %}
+{%   if vhost.https.crl_file is defined %}
+    #   Certificate Revocation Lists (CRL):
+    #   Set the CA revocation path where to find huge file containing all
+    #   CA CRLs for client authentication (file must be PEM encoded)
+    SSLCARevocationFile {{  vhost.https.crl_file }}
+{%   endif %}
+  </IfModule>
+  <IfModule mod_gnutls.c>
+    GnuTLSEnable on
+    GnuTLSCertificateFile {{ vhost.https.certificate_file }}
+    GnuTLSKeyFile {{ vhost.https.certificate_key_file }}
+  </IfModule>
+{% endif %}
+
+{% for key in apache2__server_level_context_directives_name %}
+{%   if vhost[key] is defined %}
+  {{   directives.directive({key: vhost[key]}) }}
+{%   endif %}
+{% endfor %}
+
+{% for sect in vhost.sections|d([]) %}
+{{   sections.section(sect)|indent(2, True) }}
+{% endfor %}
+
+{% for dir in vhost.directives|d([]) %}
+{{   directives.directive(dir)|indent(2, True) }}
+{% endfor %}
+</VirtualHost>

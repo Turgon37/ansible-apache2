@@ -55,8 +55,8 @@ ServerTokens {{ macros.stringOrBool(apache2__server_tokens) }}
 TraceEnable {{ macros.stringOrBool(apache2__trace_enable) }}
 
 ### Includes
-IncludeOptional {{ apache2__enabled_module_include_directory }}/*.load
-IncludeOptional {{ apache2__enabled_module_include_directory }}/*.conf
+IncludeOptional {{ apache2__enabled_modules_include_directory }}/*.load
+IncludeOptional {{ apache2__enabled_modules_include_directory }}/*.conf
 Include {{ apache2__ports_configuration_file }}
 
 ### Logging configuration
@@ -72,25 +72,25 @@ LogFormat "{{ format }}" {{ alias }}
 ### Directories configuration
 AccessFileName {{ apache2__access_filename }}
 
-{% for sect in apache2__default_sections %}
+{% for sect in apache2__default_sections|d([]) %}
 {{   sections.section(sect) }}
 {% endfor %}
 
 # Include generic snippets of statements
-#IncludeOptional conf-enabled/*.conf
+IncludeOptional conf-enabled/*.conf
 
 <IfModule ssl_module>
-    SSLCipherSuite {{ apache2__ssl_ciphers }}
-    SSLProtocol {{ apache2__ssl_protocols }}
-    SSLHonorCipherOrder {{ macros.stringOrBool(apache2__ssl_honorciphers) }}
+  SSLCipherSuite {{ apache2__ssl_ciphers }}
+  SSLProtocol {{ apache2__ssl_protocols }}
+  SSLHonorCipherOrder {{ macros.stringOrBool(apache2__ssl_honorciphers) }}
 {% if _apache2__version is version_compare('2.4.3', '>=') %}
-    SSLCompression off
+  SSLCompression off
 {% endif %}
 </IfModule>
 
 <IfModule mod_gnutls.c>
-    GnuTLSPriorities {{ apache2__ssl_ciphers }}
+  GnuTLSPriorities {{ apache2__ssl_ciphers }}
 </IfModule>
 
 # Include the virtual host configurations:
-#IncludeOptional sites-enabled/*.conf
+IncludeOptional sites-enabled/*.conf
