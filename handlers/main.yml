@@ -13,7 +13,7 @@
   when: apache2__service_enabled|bool and apache2__service_restartable|bool
   listen: restart-apache2-after-config-ok
 
-- name: mark-docker-daemon-to-restart
+- name: mark-daemon-to-restart
   file:
     path:  '{{ apache2__service_restart_stamp_file }}'
     state: touch
