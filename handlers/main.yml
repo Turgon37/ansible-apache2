@@ -1,9 +1,8 @@
 ---
 # handlers file for apache2
 
-- name: test-apache2-config
+- name: restart-apache2
   shell: 'apachectl configtest || (touch {{ apache2__service_restart_stamp_file }} && exit 1)'
-  listen: restart-apache2
   notify: ['restart-apache2-after-config-ok']
 
 - name: restart-apache2-daemon

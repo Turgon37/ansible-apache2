@@ -21,9 +21,7 @@
   notify: [ 'restart-apache2' ]
 
 - name: Setup availables sites
-  include_role:
-    name: apache2
-    tasks_from: virtualhost
+  include_tasks: virtualhost.yml
   vars:
     apache2__virtualhost: "{{ outer_item.value|combine({'name': outer_item.key}) }}"
   with_dict: '{{ apache2__virtual_hosts }}'
