@@ -83,7 +83,7 @@ IncludeOptional conf-enabled/*.conf
   SSLCipherSuite {{ apache2__ssl_ciphers }}
   SSLProtocol {{ apache2__ssl_protocols }}
   SSLHonorCipherOrder {{ macros.stringOrBool(apache2__ssl_honorciphers) }}
-{% if _apache2__version is version_compare('2.4.3', '>=') %}
+{% if apache2__version is version_compare('2.4.3', '>=') %}
   SSLCompression off
 {% endif %}
 </IfModule>
