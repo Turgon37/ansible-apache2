@@ -2,3 +2,7 @@
 - hosts: all
   roles:
     - role_under_test
+  vars:
+    apache2__mods_enabled:
+      - mpm_prefork.load
+      - mpm_prefork.conf
