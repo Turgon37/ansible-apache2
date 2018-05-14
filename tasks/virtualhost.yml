@@ -1,6 +1,6 @@
 ---
 
-- name: Check userparameter prerequisites
+- name: Check virtualhost prerequisites
   assert:
     that:
       - apache2__virtualhost is defined
