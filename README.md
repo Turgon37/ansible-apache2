@@ -1,6 +1,8 @@
 Ansible Role Apache2
 ========
 
+[![Build Status](https://travis-ci.org/Turgon37/ansible-apache2.svg?branch=master)](https://travis-ci.org/Turgon37/ansible-apache2)
+
 :warning: This role is under development
 
 Require Ansible >= 2.3
