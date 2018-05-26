@@ -28,10 +28,19 @@
   loop_control:
     loop_var: outer_item
 
+- name: Secure virtualhost files
+  file:
+    path:    '{{ apache2__available_sites_include_directory }}'
+    owner:   '{{ apache2__user_runas }}'
+    group:   '{{ apache2__group_runas }}'
+    mode:    u=rwX,g=rX,o=---
+    recurse: yes
+    state:   directory
+
 - name: Disable all unwanted Apache sites
   file:
-    state: absent
     path:  '{{ item.path }}'
+    state: absent
   with_items: '{{ _apache2__enabled_sites.files }}'
   when: apache2__purge_virtual_hosts and item.path|basename|replace('.conf', '') not in apache2__virtual_hosts.keys()
   notify: [ 'restart-apache2' ]
