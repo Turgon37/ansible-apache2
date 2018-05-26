@@ -34,8 +34,10 @@ apache2__service_private_tmp: True
 apache2__configuration_validator: "/usr/bin/env bash -c 'source {{ apache2__server_root }}/envvars && apache2 -t -f %s'"
 
 # Service user configuration
-apache2__user_runas: www-data
-apache2__group_runas: www-data
+# User to run apache as
+apache2__service_user: www-data
+# Group to run apache as
+apache2__service_group: www-data
 
 
 ### GENERAL CONFIGURATION

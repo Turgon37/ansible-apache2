@@ -36,8 +36,8 @@
 ### Global configuration
 ServerRoot "{{ apache2__server_root }}"
 PidFile {{ apache2__pidfile }}
-User {{ apache2__user_runas }}
-Group {{ apache2__group_runas }}
+User {{ apache2__service_user }}
+Group {{ apache2__service_group }}
 
 Mutex file:{{ apache2__mutex_directory }} default
 
