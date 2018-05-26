@@ -31,7 +31,7 @@
 - name: Secure virtualhost files
   file:
     path:    '{{ apache2__available_sites_include_directory }}'
-    owner:   '{{ apache2__user_runas }}'
+    owner:   root
     group:   '{{ apache2__group_runas }}'
     mode:    u=rwX,g=rX,o=---
     recurse: yes

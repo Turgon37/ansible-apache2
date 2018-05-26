@@ -33,7 +33,7 @@
   file:
     path:  '{{ item }}'
     owner: root
-    group: root
+    group: '{{ apache2__group_runas }}'
     mode:  0755
     state: directory
   with_items:
@@ -47,6 +47,7 @@
   file:
     path:  '{{ apache2__mutex_directory }}'
     owner: '{{ apache2__user_runas }}'
+    group: '{{ apache2__group_runas }}'
     mode:  0755
     state: directory
 
@@ -62,8 +63,8 @@
     src:   ports.conf.j2
     dest:  '{{ apache2__server_root }}/ports.conf'
     owner: root
-    group: root
-    mode:  0644
+    group: '{{ apache2__group_runas }}'
+    mode:  0640
   notify: [ 'restart-apache2' ]
 
 - name: Include mods subtasks
@@ -77,7 +78,7 @@
     src:   apache2.conf.j2
     dest:  '{{ apache2__main_configuration_file }}'
     owner: root
-    group: root
-    mode:  0644
+    group: '{{ apache2__group_runas }}'
+    mode:  0640
     validate: '{{ apache2__configuration_validator }}'
   notify: [ 'restart-apache2' ]
