@@ -21,7 +21,7 @@
 
 # Ensure required folder before the full apache2 role is applied
 
-- name: Ensure userparameters directories exists
+- name: Ensure virtualhosts directories exists
   file:
     path:  '{{ item }}'
     state: directory
@@ -31,13 +31,26 @@
   notify: [ 'restart-apache2' ]
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
+### virtual host template
+
+- name: Test if virtualhost exists
+  stat:
+    path: '{{ _apache2__virtualhost_path }}'
+  register: _apache2__virtualhost_file_stat
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
+
+- name: Ensure temporary permissions on virtualhost file
+  file:
+    path:  '{{ _apache2__virtualhost_file_stat }}'
+    mode:  0644
+    state: touch
+  when: apache2__virtualhost.state|d('present') == 'present' and not _apache2__virtualhost_file_stat.stat.exists
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
+
 - name: 'Create Apache virtual host {{ apache2__virtualhost.name }}'
   template:
     src:   virtualhost.conf.j2
     dest:  '{{ _apache2__virtualhost_path }}'
-    owner: root
-    group: root
-    mode:  0644
   when: apache2__virtualhost.state|d('present') == 'present'
   notify: [ 'restart-apache2' ]
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
@@ -47,5 +60,15 @@
     path:  '{{ _apache2__virtualhost_path }}'
     state: absent
   when: apache2__virtualhost.state|d('present') != 'present'
+  notify: [ 'restart-apache2' ]
+  tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
+
+### Virtual host config
+
+- name: Ensure virtualhosts DocumentRoot directory exists
+  file:
+    path:  "{{ apache2__virtualhost['document_root'] }}"
+    state: directory
+  when: apache2__virtualhost['document_root'] is defined
   notify: [ 'restart-apache2' ]
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
