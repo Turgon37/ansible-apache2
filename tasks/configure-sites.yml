@@ -32,7 +32,7 @@
   file:
     path:    '{{ apache2__available_sites_include_directory }}'
     owner:   root
-    group:   '{{ apache2__group_runas }}'
+    group:   '{{ apache2__service_group }}'
     mode:    u=rwX,g=rX,o=---
     recurse: yes
     state:   directory

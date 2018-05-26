@@ -11,17 +11,17 @@
   set_fact:
     apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] if _apache2__version is not skipped else ansible_local.apache2.version_full }}"
 
-- name: "Ensure service group '{{ apache2__group_runas }}' is present"
+- name: "Ensure service group '{{ apache2__service_group }}' is present"
   group:
-    name:   '{{ apache2__group_runas }}'
+    name:   '{{ apache2__service_group }}'
     system: yes
     state:  present
   notify: [ 'restart-apache2' ]
 
-- name: "Ensure service user '{{ apache2__user_runas }}' is present"
+- name: "Ensure service user '{{ apache2__service_user }}' is present"
   user:
-    name:       '{{ apache2__user_runas }}'
-    group:      '{{ apache2__group_runas }}'
+    name:       '{{ apache2__service_user }}'
+    group:      '{{ apache2__service_group }}'
     shell:      /sbin/nologin
     home:       /nonexistent
     createhome: no
@@ -33,7 +33,7 @@
   file:
     path:  '{{ item }}'
     owner: root
-    group: '{{ apache2__group_runas }}'
+    group: '{{ apache2__service_group }}'
     mode:  0750
     state: directory
   with_items:
@@ -46,8 +46,8 @@
 - name: Ensure mutex directory exists
   file:
     path:  '{{ apache2__mutex_directory }}'
-    owner: '{{ apache2__user_runas }}'
-    group: '{{ apache2__group_runas }}'
+    owner: '{{ apache2__service_user }}'
+    group: '{{ apache2__service_group }}'
     mode:  0755
     state: directory
 
@@ -63,7 +63,7 @@
     src:   ports.conf.j2
     dest:  '{{ apache2__server_root }}/ports.conf'
     owner: root
-    group: '{{ apache2__group_runas }}'
+    group: '{{ apache2__service_group }}'
     mode:  0640
   notify: [ 'restart-apache2' ]
 
@@ -78,7 +78,7 @@
     src:   apache2.conf.j2
     dest:  '{{ apache2__main_configuration_file }}'
     owner: root
-    group: '{{ apache2__group_runas }}'
+    group: '{{ apache2__service_group }}'
     mode:  0640
     validate: '{{ apache2__configuration_validator }}'
   notify: [ 'restart-apache2' ]
