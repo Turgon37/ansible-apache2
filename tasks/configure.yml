@@ -34,7 +34,7 @@
     path:  '{{ item }}'
     owner: root
     group: '{{ apache2__group_runas }}'
-    mode:  0755
+    mode:  0750
     state: directory
   with_items:
     - '{{ apache2__server_root }}'
