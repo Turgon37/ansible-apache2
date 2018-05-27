@@ -67,8 +67,8 @@
     mode:  0640
   notify: [ 'restart-apache2' ]
 
-- name: Include mods subtasks
-  import_tasks: configure-mods.yml
+- name: Include modules subtasks
+  import_tasks: configure-modules.yml
 
 - name: Include virtuals hosts subtasks
   import_tasks: configure-sites.yml
