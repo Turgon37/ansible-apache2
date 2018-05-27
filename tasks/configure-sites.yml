@@ -12,7 +12,7 @@
     file_type: any
   register: _apache2__enabled_sites
 
-- name: Remove unknown availables sites
+- name: Remove unwanted availables sites
   file:
     state: absent
     path:  '{{ item.path }}'

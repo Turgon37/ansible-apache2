@@ -50,11 +50,10 @@ apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
 
 # List of module required by monitoring virtual host
 apache2__monitoring_modules:
-  - authz_host.load
-  - status.load
-  - status.conf
+  - authz_host
+  - status
 
-# Vistual host monitoring definition
+# Monitoring virtual host definition
 apache2__monitoring_virtual_hosts:
   999-monitoring:
     hosts:
