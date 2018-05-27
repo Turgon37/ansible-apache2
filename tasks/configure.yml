@@ -1,16 +1,5 @@
 ---
 
-- name: Get installed version of Apache.
-  command: /usr/bin/env apache2 -v
-  when: ansible_local.apache2 is not defined
-  changed_when: False
-  check_mode: False
-  register: _apache2__version
-
-- name: Create _apache2__version variable
-  set_fact:
-    apache2__version: "{{ _apache2__version.stdout.split()[2].split('/')[1] if _apache2__version is not skipped else ansible_local.apache2.version_full }}"
-
 - name: "Ensure service group '{{ apache2__service_group }}' is present"
   group:
     name:   '{{ apache2__service_group }}'
