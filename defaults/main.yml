@@ -52,6 +52,7 @@ apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
 apache2__monitoring_modules:
   - authz_host.load
   - status.load
+  - status.conf
 
 # Vistual host monitoring definition
 apache2__monitoring_virtual_hosts:
