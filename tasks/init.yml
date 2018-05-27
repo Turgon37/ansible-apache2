@@ -6,3 +6,14 @@
       - apache2__server_signature in [True, False, 'On', 'Off', 'EMail']
       - apache2__server_tokens in ['Major', 'Minor', 'Min', 'Minimal', 'Prod', 'ProductOnly', 'OS', 'Full']
       - apache2__trace_enable in [True, False, 'On', 'Off', 'extended']
+
+- name: Get installed version of Apache.
+  command: /usr/bin/env apache2 -v
+  when: ansible_local.apache2 is not defined
+  changed_when: False
+  check_mode: False
+  register: _apache2__version_raw
+
+- name: Create apache2__version variable
+  set_fact:
+    _apache2__version: "{{ _apache2__version_raw.stdout.split()[2].split('/')[1] if _apache2__version_raw is not skipped else ansible_local.apache2.version_full }}"
