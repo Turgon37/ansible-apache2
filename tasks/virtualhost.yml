@@ -41,7 +41,7 @@
 
 - name: Ensure temporary permissions on virtualhost file
   file:
-    path:  '{{ _apache2__virtualhost_file_stat }}'
+    path:  '{{ _apache2__virtualhost_path }}'
     mode:  0644
     state: touch
   when: apache2__virtualhost.state|d('present') == 'present' and not _apache2__virtualhost_file_stat.stat.exists

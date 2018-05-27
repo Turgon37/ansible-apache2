@@ -5,6 +5,9 @@
 # Enable facts deploiement
 apache2__facts: True
 
+# Choose the monitoring backend to configure (if available)
+#apache2__monitoring:
+
 # The name of the apache2 package
 apache2__packages_names:
   - apache2
@@ -40,6 +43,30 @@ apache2__service_user: www-data
 apache2__service_group: www-data
 
 
+### MONITORING CONFIGURATION
+# ---------------------------------------
+# If true, load status module and create localhost available vhost to serve mod status
+apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
+
+# List of module required by monitoring virtual host
+apache2__monitoring_modules:
+  - authz_host.load
+  - status.load
+
+# Vistual host monitoring definition
+apache2__monitoring_virtual_hosts:
+  999-monitoring:
+    hosts:
+      - ip: 127.0.0.1
+    server_name: localhost
+    sections:
+      - type: location
+        path: /server-status
+        directives:
+          - set_handler: server-status
+          - require: local
+
+
 ### GENERAL CONFIGURATION
 # ---------------------------------------
 # ServerRoot: The top of the directory tree under which the server's
@@ -55,11 +82,13 @@ apache2__enabled_modules_include_directory: '{{ apache2__server_root }}/mods-ena
 # This directory contains configuration of available modules
 apache2__available_modules_include_directory: '{{ apache2__server_root }}/mods-available'
 
+# Path where modules files (.so) can be found
+apache2__modules_directory: /usr/lib/apache2/modules
+
 # This directory contains symbolic links of enabled sites
 apache2__available_sites_include_directory: '{{ apache2__server_root }}/sites-available'
 # This directory contains configuration of available sites
 apache2__enabled_sites_include_directory: '{{ apache2__server_root }}/sites-enabled'
-
 
 # PidFile: The file in which the server should record its process
 # identification number when it starts.
@@ -202,19 +231,20 @@ apache2__default_sections:
 
 ## Apache modules
 # This variable is intended to be used in Ansible’s global inventory.
-apache2__global_mods_enabled: {}
+apache2__global_modules_enabled: []
 
 # This variable is intended to be used in a host inventory group of Ansible
 # (only one host group is supported).
-apache2__group_mods_enabled: {}
+apache2__group_modules_enabled: []
 
 # This variable is intended to be used in the inventory of hosts.
-apache2__host_mods_enabled: {}
+apache2__host_modules_enabled: []
 
 # Combine all enabled mods
-apache2__mods_enabled: '{{ apache2__global_mods_enabled
-                     |combine(apache2__group_mods_enabled)
-                     |combine(apache2__host_mods_enabled) }}'
+apache2__modules_enabled: '{{ apache2__global_modules_enabled
+                     |union(apache2__group_modules_enabled)
+                     |union(apache2__host_modules_enabled)
+                     |union(apache2__monitoring_modules if apache2__enable_monitoring_vhost else []) }}'
 
 ## Apache vhost
 # If true, all virtual hosts that are not in apache2__virtual_hosts
@@ -246,4 +276,5 @@ apache2__host_virtual_hosts: {}
 # Combned vhosts dicts
 apache2__virtual_hosts: '{{ apache2__global_virtual_hosts
                      |combine(apache2__group_virtual_hosts)
-                     |combine(apache2__host_virtual_hosts) }}'
+                     |combine(apache2__host_virtual_hosts)
+                     |combine(apache2__monitoring_virtual_hosts if apache2__enable_monitoring_vhost else {}) }}'

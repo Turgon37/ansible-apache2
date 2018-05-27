@@ -3,7 +3,7 @@
   roles:
     - role_under_test
   vars:
-    apache2__mods_enabled:
+    apache2__modules_enabled:
       - authz_core.load
       - mpm_prefork.load
       - mpm_prefork.conf
