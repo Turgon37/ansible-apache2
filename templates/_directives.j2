@@ -29,6 +29,8 @@ DocumentRoot {{ value }}
 ErrorLog {{ value }}
 {%-   elif name == 'custom_log' -%}
 CustomLog {{ value }}
+{%-   elif name == 'set_handler' -%}
+SetHandler {{ value }}
 {%-   elif name == 'extra_parameters' -%}
 {%      for param in value %}
 {{ param }}

@@ -8,6 +8,8 @@
 {%- macro section(sec) -%}
 {%    if sec.type == 'directory' %}
 {{ directory(sec.path, sec.directives) }}
+{%    elif sec.type == 'location' %}
+{{ location(sec.path, sec.directives) }}
 {%    elif sec.type == 'files_match' %}
 {{ files_match(sec.regex, sec.directives) }}
 {%    else %}
@@ -29,6 +31,22 @@
 {{   _directives.directive(dir)|indent(2, true) }}
 {% endfor %}
 </Directory>
+{%- endmacro -%}
+
+
+{#
+ # Produce a Location section
+ #
+ # @param path : the url path the location will apply to
+ # @param directives : the list of directives
+ # @return string
+ #}
+{%- macro location(path, directives) -%}
+<Location "{{ path }}">
+{% for dir in directives %}
+{{   _directives.directive(dir)|indent(2, true) }}
+{% endfor %}
+</Location>
 {%- endmacro -%}
 
 

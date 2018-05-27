@@ -49,9 +49,9 @@ The following variable apply to server and can be overloaded in each virtual hos
 
 To configure which module are enabled or not, you must declare all module's file name in any of the three list :
 
-* apache2__global_mods_enabled
-* apache2__group_mods_enabled
-* apache2__host_mods_enabled
+* apache2__global_modules_enabled
+* apache2__group_modules_enabled
+* apache2__host_modules_enabled
 
 Each name of theses list muse contains the module name and the file's extension. In case where a module have a '.conf' and a '.load' file, you have to put theses two name in the list.
 
@@ -103,7 +103,7 @@ Each vhost block must be put in a dict where the key will be the filename of the
   * Example of fully loaded module apache
 
 ```
-apache2__host_mods_enabled: ['access_compat.load', 'alias.conf', 'alias.load', 'auth_basic.load', 'authn_core.load', 'authn_file.load', 'authz_core.load', 'authz_host.load', 'authz_user.load', 'headers.load', 'autoindex.conf', 'autoindex.load', 'deflate.conf', 'deflate.load', 'dir.conf', 'dir.load', 'env.load', 'filter.load', 'mime.conf', 'mime.load', 'mpm_prefork.conf', 'mpm_prefork.load', 'negotiation.conf', 'negotiation.load', 'php5.conf', 'php5.load', 'proxy.load', 'proxy_http.load', 'setenvif.conf', 'setenvif.load', 'ssl.load', 'ssl.conf', 'socache_shmcb.load']
+apache2__host_modules_enabled: ['access_compat.load', 'alias.conf', 'alias.load', 'auth_basic.load', 'authn_core.load', 'authn_file.load', 'authz_core.load', 'authz_host.load', 'authz_user.load', 'headers.load', 'autoindex.conf', 'autoindex.load', 'deflate.conf', 'deflate.load', 'dir.conf', 'dir.load', 'env.load', 'filter.load', 'mime.conf', 'mime.load', 'mpm_prefork.conf', 'mpm_prefork.load', 'negotiation.conf', 'negotiation.load', 'php5.conf', 'php5.load', 'proxy.load', 'proxy_http.load', 'setenvif.conf', 'setenvif.load', 'ssl.load', 'ssl.conf', 'socache_shmcb.load']
 ```
 
   * Simple permanent redirect from HTTP to HTTPs

@@ -17,13 +17,13 @@
     state: absent
     path:  '{{ item.path }}'
   with_items: '{{ _apache2__enabled_mods.files }}'
-  when: item.path|basename not in apache2__mods_enabled
+  when: item.path|basename not in apache2__modules_enabled
   notify: [ 'restart-apache2' ]
 
 - name: Check availability of needed Apache mods
   fail:
     msg: 'The apache module {{ item }} is not available'
-  with_items: '{{ apache2__mods_enabled }}'
+  with_items: '{{ apache2__modules_enabled }}'
   when: item not in _apache2__available_mods.files|map(attribute='path')|map('basename')
 
 - name: Enable wanted Apache mods
@@ -31,6 +31,6 @@
     src:   '{{ apache2__available_modules_include_directory }}/{{ item }}'
     dest:  '{{ apache2__enabled_modules_include_directory }}/{{ item }}'
     state: link
-  with_items: '{{ apache2__mods_enabled }}'
+  with_items: '{{ apache2__modules_enabled }}'
   when: item not in _apache2__enabled_mods.files|map(attribute='path')|map('basename')
   notify: [ 'restart-apache2' ]
