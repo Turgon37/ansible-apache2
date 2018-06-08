@@ -11,7 +11,7 @@
 
 - name: Insert custom fact file
   copy:
-    src:  files/apache2.py
+    src:  files/apache2.facts.py
     dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/apache2.fact"
     mode: 0755
   tags: ['apache2', 'apache2-facts']
