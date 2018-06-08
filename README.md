@@ -5,7 +5,9 @@ Ansible Role Apache2
 
 :warning: This role is under development
 
-Require Ansible >= 2.3
+:grey_exclamation: Before using this role, please know that all my Ansible roles are fully written and accustomed to my IT infrastructure. So, even if they are as generic as possible they will not necessarily fill your needs, I advice you to carrefully analyse what they do and evaluate their capability to be installed securely on your servers.
+
+Require Ansible >= 2.4
 
 
 This roles configures an instance of Apache2 daemon
