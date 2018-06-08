@@ -20,10 +20,9 @@ script:
 
   # Run tests.
   - source ${PWD}/tests/test.sh
-  - export container_id=$(cat /tmp/container_id)
 
   #
   ## Specific roles tests
   #
   # Ensure APACHE2 is installed.
-  - docker exec --tty --env TERM=xterm ${container_id} apache2 -v
+  - docker exec `docker_env` ${CONTAINER_ID} apache2 -v
