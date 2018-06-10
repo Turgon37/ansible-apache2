@@ -1,5 +1,3 @@
----
-
 galaxy_info:
   author: Pierre GINDRAUD
   description: This role configure Apache2 server
@@ -8,7 +6,10 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - 9
-  galaxy_tags: []
+        - jessie
+        - stretch
+  galaxy_tags:
+    - apache
+    - web
 
 dependencies: []

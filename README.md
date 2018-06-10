@@ -2,6 +2,7 @@ Ansible Role Apache2
 ========
 
 [![Build Status](https://travis-ci.org/Turgon37/ansible-apache2.svg?branch=master)](https://travis-ci.org/Turgon37/ansible-apache2)
+[![License](https://img.shields.io/badge/license-MIT%20License-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
 :warning: This role is under development
 
