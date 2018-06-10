@@ -3,10 +3,10 @@
 # --------------------------------
 
 # Enable facts deploiement
-apache2__facts: True
+apache2__facts: true
 
 # Choose the monitoring backend to configure (if available)
-#apache2__monitoring:
+# apache2__monitoring:
 
 # The name of the apache2 package
 apache2__packages_names:
@@ -19,22 +19,26 @@ apache2__packages_names:
 apache2__service_name: apache2
 
 # If true the mariadb service will be started and enabled
-apache2__service_enabled: True
+apache2__service_enabled: true
 
-# If this is set to true, ansible will automatically restart mariadb daemon on changes
-apache2__service_restartable: True
+# If this is set to true,
+# ansible will automatically restart mariadb daemon on changes
+apache2__service_restartable: true
 
 # Path to the must restart stamp file
 apache2__service_restart_stamp_file: '/var/local/apache2-must-restart-stamp'
 
 # Path to systemd override directory
-apache2__systemd_override_options_dir: '/etc/systemd/system/{{ apache2__service_name }}.service.d'
+apache2__systemd_override_options_dir:
+  '/etc/systemd/system/{{ apache2__service_name }}.service.d'
 
 # Enable systemd private tmp
-apache2__service_private_tmp: True
+apache2__service_private_tmp: true
 
 # Command to use for template validation
-apache2__configuration_validator: "/usr/bin/env bash -c 'source {{ apache2__server_root }}/envvars && apache2 -t -f %s'"
+apache2__configuration_validator: >
+  /usr/bin/env bash -c
+  'source {{ apache2__server_root }}/envvars && apache2 -t -f %s'
 
 # Service user configuration
 # User to run apache as
@@ -45,7 +49,8 @@ apache2__service_group: www-data
 
 ### MONITORING CONFIGURATION
 # ---------------------------------------
-# If true, load status module and create localhost available vhost to serve mod status
+# If true,
+# load status module and create localhost available vhost to serve mod status
 apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
 
 # List of module required by monitoring virtual host
@@ -78,17 +83,21 @@ apache2__main_configuration_file: '{{ apache2__server_root }}/apache2.conf'
 apache2__ports_configuration_file: '{{ apache2__server_root }}/ports.conf'
 
 # This directory contains symbolic links of enabled modules
-apache2__enabled_modules_include_directory: '{{ apache2__server_root }}/mods-enabled'
+apache2__enabled_modules_include_directory:
+  '{{ apache2__server_root }}/mods-enabled'
 # This directory contains configuration of available modules
-apache2__available_modules_include_directory: '{{ apache2__server_root }}/mods-available'
+apache2__available_modules_include_directory:
+  '{{ apache2__server_root }}/mods-available'
 
 # Path where modules files (.so) can be found
 apache2__modules_directory: /usr/lib/apache2/modules
 
 # This directory contains symbolic links of enabled sites
-apache2__available_sites_include_directory: '{{ apache2__server_root }}/sites-available'
+apache2__available_sites_include_directory:
+  '{{ apache2__server_root }}/sites-available'
 # This directory contains configuration of available sites
-apache2__enabled_sites_include_directory: '{{ apache2__server_root }}/sites-enabled'
+apache2__enabled_sites_include_directory:
+  '{{ apache2__server_root }}/sites-enabled'
 
 # PidFile: The file in which the server should record its process
 # identification number when it starts.
@@ -131,7 +140,8 @@ apache2__error_log_level_per_module: {}
 # Use mod_remoteip instead.
 # List of log formats
 apache2__log_formats:
-  vhost_combined: '%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"'
+  vhost_combined:
+    '%v:%p %h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"'
   combined: '%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"'
   common: '%h %l %u %t \"%r\" %>s %O'
   referer: '%{Referer}i -> %U'
@@ -150,9 +160,9 @@ apache2__serveradmin: root@localhost
 apache2__server_tokens: Prod
 
 # Configures the footer on server-generated documents
-apache2__server_signature: False
+apache2__server_signature: false
 # Determines the behaviour on TRACE requests
-apache2__trace_enable: False
+apache2__trace_enable: false
 
 
 ### NETWORK CONFIGURATION
@@ -167,7 +177,7 @@ apache2__listen_https:
 
 # KeepAlive: Whether or not to allow persistent connections (more than
 # one request per connection). Set to "Off" to deactivate.
-apache2__keepalive: True
+apache2__keepalive: true
 
 # MaxKeepAliveRequests: The maximum number of requests to allow
 # during a persistent connection. Set to 0 to allow an unlimited amount.
@@ -183,15 +193,60 @@ apache2__keepalived_timeout: 5
 
 # HostnameLookups: Log the names of clients or just their IP addresses
 # e.g., www.apache.org (on) or 204.62.129.132 (off).
-apache2__hostname_lookups: False
+apache2__hostname_lookups: false
 
 # List of enabled ssl protocols
 apache2__ssl_protocols: All -SSLv2 -SSLv3
 
 # Default list of ciphers
-apache2__ssl_ciphers: ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA
+apache2__ssl_ciphers_list:
+  - ECDHE-RSA-AES128-GCM-SHA256
+  - ECDHE-ECDSA-AES128-GCM-SHA256
+  - ECDHE-RSA-AES256-GCM-SHA384
+  - ECDHE-ECDSA-AES256-GCM-SHA384
+  - DHE-RSA-AES128-GCM-SHA256
+  - DHE-DSS-AES128-GCM-SHA256
+  - kEDH+AESGCM
+  - ECDHE-RSA-AES128-SHA256
+  - ECDHE-ECDSA-AES128-SHA256
+  - ECDHE-RSA-AES128-SHA
+  - ECDHE-ECDSA-AES128-SHA
+  - ECDHE-RSA-AES256-SHA384
+  - ECDHE-ECDSA-AES256-SHA384
+  - ECDHE-RSA-AES256-SHA
+  - ECDHE-ECDSA-AES256-SHA
+  - DHE-RSA-AES128-SHA256
+  - DHE-RSA-AES128-SHA
+  - DHE-DSS-AES128-SHA256
+  - DHE-RSA-AES256-SHA256
+  - DHE-DSS-AES256-SHA
+  - DHE-RSA-AES256-SHA
+  - AES128-GCM-SHA256
+  - AES256-GCM-SHA384
+  - AES128-SHA256
+  - AES256-SHA256
+  - AES128-SHA
+  - AES256-SHA
+  - AES
+  - CAMELLIA
+  - DES-CBC3-SHA
+  - '!aNULL'
+  - '!eNULL'
+  - '!EXPORT'
+  - '!DES'
+  - '!RC4'
+  - '!MD5'
+  - '!PSK'
+  - '!aECDH'
+  - '!EDH-DSS-DES-CBC3-SHA'
+  - '!EDH-RSA-DES-CBC3-SHA'
+  - '!KRB5-DES-CBC3-SHA'
 
-apache2__ssl_honorciphers: True
+# Joined string for apache configuration option
+apache2__ssl_ciphers: "{{ apache2__ssl_ciphers_list|join(':') }}"
+
+# Use server cipher order instead of client one
+apache2__ssl_honorciphers_order: true
 
 
 ### DIRECTORY CONFIGURATION
@@ -242,14 +297,17 @@ apache2__host_modules_enabled: []
 
 # Combine all enabled mods
 apache2__modules_enabled: '{{ apache2__global_modules_enabled
-                     |union(apache2__group_modules_enabled)
-                     |union(apache2__host_modules_enabled)
-                     |union(apache2__monitoring_modules if apache2__enable_monitoring_vhost else []) }}'
+    |union(apache2__group_modules_enabled)
+    |union(apache2__host_modules_enabled)
+    |union(
+      apache2__monitoring_modules if apache2__enable_monitoring_vhost else []
+    )
+  }}'
 
 ## Apache vhost
 # If true, all virtual hosts that are not in apache2__virtual_hosts
 # will be removed
-apache2__purge_virtual_hosts: True
+apache2__purge_virtual_hosts: true
 
 # This variable is intended to be used in Ansible’s global inventory.
 apache2__global_virtual_hosts: {}
@@ -260,21 +318,13 @@ apache2__group_virtual_hosts: {}
 
 # This variable is intended to be used in the inventory of hosts.
 apache2__host_virtual_hosts: {}
-#apache2__host_virtual_hosts:
-  #000-default:
-    #server_name: www.example.com
-    #server_admin: webmaster@localhost
-    #document_root: /var/www/html
-    #sections:
-      #- type: directory
-        #path: /var/www/html
-        #directives:
-          #- require: all granted
-    #error_log: '{{ apache2__log_directory }}/error.log'
-    #custom_log: '{{ apache2__log_directory }}/access.log combined'
 
 # Combned vhosts dicts
 apache2__virtual_hosts: '{{ apache2__global_virtual_hosts
-                     |combine(apache2__group_virtual_hosts)
-                     |combine(apache2__host_virtual_hosts)
-                     |combine(apache2__monitoring_virtual_hosts if apache2__enable_monitoring_vhost else {}) }}'
+    |combine(apache2__group_virtual_hosts)
+    |combine(apache2__host_virtual_hosts)
+    |combine(
+      apache2__monitoring_virtual_hosts if apache2__enable_monitoring_vhost
+      else {}
+    )
+  }}'

@@ -5,7 +5,7 @@
  # @return string
  #}
 {%- macro directive(line) -%}
-{%- set name = line.keys()[0] -%}
+{%- set name = (line.keys()|list)[0] -%}
 {%- set value = line.values()[0] -%}
 {%-   if name == 'options' -%}
 Options {{ value if value is string else value|join(' ') }}

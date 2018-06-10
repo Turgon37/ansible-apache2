@@ -5,30 +5,42 @@
     that:
       - apache2__virtualhost is defined
       - apache2__virtualhost.name is defined
-    msg: apache2__virtualhost must be defined with specifications and apache2__virtualhost.name must contains the name of the file
+    msg: >
+      apache2__virtualhost must be defined with specifications and
+      apache2__virtualhost.name must contains the name of the file
   tags: ['always']
 
 - name: Init some value
   set_fact:
-    _apache2__available_sites_include_directory: "{{ apache2__available_sites_include_directory|d(apache2__server_root|d('/etc/apache2')~'/sites-available') }}"
-    _apache2__enabled_sites_include_directory: "{{ apache2__enabled_sites_include_directory|d(apache2__server_root|d('/etc/apache2')~'/sites-enabled') }}"
+    _apache2__available_sites_include_directory:
+      "{{ apache2__available_sites_include_directory
+          |d(apache2__server_root
+            |d('/etc/apache2')~'/sites-available')
+      }}"
+    _apache2__enabled_sites_include_directory:
+      "{{ apache2__enabled_sites_include_directory
+          |d(apache2__server_root
+            |d('/etc/apache2')~'/sites-enabled')
+      }}"
   tags: ['always']
 
 - name: Compute virtualhost final path
   set_fact:
-    _apache2__virtualhost_path: "{{ _apache2__available_sites_include_directory }}/{{ apache2__virtualhost.name|replace(' ', '_') }}.conf"
+    _apache2__virtualhost_path:
+      "{{ _apache2__available_sites_include_directory }}/
+        {{ apache2__virtualhost.name|replace(' ', '_') }}.conf"
   tags: ['always']
 
 # Ensure required folder before the full apache2 role is applied
 
 - name: Ensure virtualhosts directories exists
   file:
-    path:  '{{ item }}'
+    path: '{{ item }}'
     state: directory
   with_items:
     - '{{ _apache2__available_sites_include_directory }}'
     - '{{ _apache2__enabled_sites_include_directory }}'
-  notify: [ 'restart-apache2' ]
+  notify: ['restart-apache2']
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
 ### virtual host template
@@ -41,46 +53,47 @@
 
 - name: Ensure temporary permissions on virtualhost file
   file:
-    path:  '{{ _apache2__virtualhost_path }}'
-    mode:  0644
+    path: '{{ _apache2__virtualhost_path }}'
+    mode: 0644
     state: touch
-  when: apache2__virtualhost.state|d('present') == 'present' and not _apache2__virtualhost_file_stat.stat.exists
+  when: apache2__virtualhost.state|d('present') == 'present'
+    and not _apache2__virtualhost_file_stat.stat.exists
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
 - name: 'Create Apache virtual host {{ apache2__virtualhost.name }}'
   template:
-    src:   virtualhost.conf.j2
-    dest:  '{{ _apache2__virtualhost_path }}'
+    src: virtualhost.conf.j2
+    dest: '{{ _apache2__virtualhost_path }}'
   when: apache2__virtualhost.state|d('present') == 'present'
-  notify: [ 'restart-apache2' ]
+  notify: ['restart-apache2']
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
 - name: 'Remove Apache virtual host {{ apache2__virtualhost.name }} if needed'
   file:
-    path:  '{{ _apache2__virtualhost_path }}'
+    path: '{{ _apache2__virtualhost_path }}'
     state: absent
   when: apache2__virtualhost.state|d('present') != 'present'
-  notify: [ 'restart-apache2' ]
+  notify: ['restart-apache2']
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
 ### Virtual host config
 
 - name: Ensure virtualhosts DocumentRoot directory exists
   file:
-    path:  "{{ apache2__virtualhost['document_root'] }}"
+    path: "{{ apache2__virtualhost['document_root'] }}"
     owner: "{{ apache2__virtualhost['document_root_user']|d(omit) }}"
     group: "{{ apache2__virtualhost['document_root_group']|d(omit) }}"
     state: directory
   when: apache2__virtualhost['document_root'] is defined
-  notify: [ 'restart-apache2' ]
+  notify: ['restart-apache2']
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']
 
 - name: Ensure virtualhosts ErrorLog directory exists
   file:
-    path:  "{{ apache2__virtualhost['error_log']|dirname }}"
+    path: "{{ apache2__virtualhost['error_log']|dirname }}"
     owner: "{{ apache2__virtualhost['error_log_user']|d(omit) }}"
     group: "{{ apache2__virtualhost['error_log_group']|d(omit) }}"
     state: directory
   when: apache2__virtualhost['error_log'] is defined
-  notify: [ 'restart-apache2' ]
+  notify: ['restart-apache2']
   tags: ['apache2', 'apache2-configure', 'apache2-virtualhost']

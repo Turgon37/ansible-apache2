@@ -4,5 +4,7 @@
   assert:
     that:
       - apache2__server_signature in [True, False, 'On', 'Off', 'EMail']
-      - apache2__server_tokens in ['Major', 'Minor', 'Min', 'Minimal', 'Prod', 'ProductOnly', 'OS', 'Full']
+      - apache2__server_tokens in
+        ['Major', 'Minor', 'Min', 'Minimal', 'Prod',
+         'ProductOnly', 'OS', 'Full']
       - apache2__trace_enable in [True, False, 'On', 'Off', 'extended']

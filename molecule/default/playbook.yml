@@ -1,7 +1,9 @@
 ---
-- hosts: all
+- name: Run role
+  hosts: all
+  any_errors_fatal: true
   roles:
-    - role_under_test
+    - role: apache2
   vars:
     apache2__modules_enabled:
       - authz_core

@@ -2,55 +2,64 @@
 
 - name: List available sites
   find:
-    paths:     '{{ apache2__available_sites_include_directory }}'
+    paths: '{{ apache2__available_sites_include_directory }}'
     file_type: any
   register: _apache2__available_sites
 
 - name: List enabled sites
   find:
-    paths:     '{{ apache2__enabled_sites_include_directory }}'
+    paths: '{{ apache2__enabled_sites_include_directory }}'
     file_type: any
   register: _apache2__enabled_sites
 
 - name: Remove unwanted availables sites
   file:
     state: absent
-    path:  '{{ item.path }}'
+    path: '{{ item.path }}'
   with_items: '{{ _apache2__available_sites.files }}'
-  when: apache2__purge_virtual_hosts and item.path|basename|replace('.conf', '') not in apache2__virtual_hosts.keys()
-  notify: [ 'restart-apache2' ]
+  when: apache2__purge_virtual_hosts|bool
+        and item.path|basename|replace('.conf', '') not in
+        apache2__virtual_hosts.keys()|list
+  notify: ['restart-apache2']
 
 - name: Setup availables sites
-  include_tasks: virtualhost.yml
+  include_tasks: types/virtual_host.yml
   vars:
-    apache2__virtualhost: "{{ outer_item.value|combine({'name': outer_item.key}) }}"
+    apache2__virtualhost:
+      "{{ outer_item.value|combine({'name': outer_item.key}) }}"
   with_dict: '{{ apache2__virtual_hosts }}'
   loop_control:
     loop_var: outer_item
 
 - name: Secure virtualhost files
   file:
-    path:    '{{ apache2__available_sites_include_directory }}'
-    owner:   root
-    group:   '{{ apache2__service_group }}'
-    mode:    u=rwX,g=rX,o=---
-    recurse: yes
-    state:   directory
+    path: '{{ apache2__available_sites_include_directory }}'
+    owner: root
+    group: '{{ apache2__service_group }}'
+    mode: u=rwX,g=rX,o=---
+    recurse: true
+    state: directory
 
 - name: Disable all unwanted Apache sites
   file:
-    path:  '{{ item.path }}'
+    path: '{{ item.path }}'
     state: absent
   with_items: '{{ _apache2__enabled_sites.files }}'
-  when: apache2__purge_virtual_hosts and item.path|basename|replace('.conf', '') not in apache2__virtual_hosts.keys()
-  notify: [ 'restart-apache2' ]
+  when: apache2__purge_virtual_hosts
+    and item.path|basename|replace('.conf', '') not in
+      apache2__virtual_hosts.keys()|list
+  notify: ['restart-apache2']
 
 - name: Enable wanted Apache sites.
   file:
-    src:   "{{ apache2__available_sites_include_directory }}/{{ item|replace(' ', '_') }}.conf"
-    dest:  "{{ apache2__enabled_sites_include_directory }}/{{ item|replace(' ', '_') }}.conf"
+    src: >
+      {{ apache2__available_sites_include_directory }}/
+      {{ item|replace(' ', '_') }}.conf
+    dest: >
+      {{ apache2__enabled_sites_include_directory }}/
+      {{ item|replace(' ', '_') }}.conf
     force: '{{ ansible_check_mode }}'
     state: link
-  with_items: '{{ apache2__virtual_hosts.keys() }}'
-  when: apache2__virtual_hosts[item].enabled|d(True)|bool
-  notify: [ 'restart-apache2' ]
+  with_items: '{{ apache2__virtual_hosts.keys()|list }}'
+  when: apache2__virtual_hosts[item]['enabled']|d(True)|bool
+  notify: ['restart-apache2']

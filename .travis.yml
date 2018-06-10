@@ -1,28 +1,22 @@
 ---
-language: bash
-
+language: python
+cache: pip
 # Tell Travis to start Docker when it brings up an environment.
 services:
   - docker
-
 env:
-  # Provide a list of OSes we want to use for testing.
-  - DISTRIBUTION: debian8
-  - DISTRIBUTION: debian9
+  - ANSIBLE='ansible>=2.4.0'
+matrix:
+  fast_finish: true
+
+install:
+  - >
+    pip install
+    ${ANSIBLE}
+    'ansible-lint>=3.4.15'
+    'molecule>=2.13.0'
+    docker
+    'testinfra>=1.7.0'
 
 script:
-  # Configure test script so we can run extra tests after playbook is run.
-  - export CLEANUP=false
-
-  # Download test shim.
-  - wget --no-verbose --output-document=${PWD}/tests/test.sh https://gist.githubusercontent.com/Turgon37/5b6e6553ef92dc65d1c7df3e1a1e290e/raw
-  - chmod +x ${PWD}/tests/test.sh
-
-  # Run tests.
-  - source ${PWD}/tests/test.sh
-
-  #
-  ## Specific roles tests
-  #
-  # Ensure APACHE2 is installed.
-  - docker exec `docker_env` ${CONTAINER_ID} apache2 -v
+  - molecule test --all
