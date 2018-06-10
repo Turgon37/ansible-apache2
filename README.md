@@ -108,6 +108,24 @@ Each vhost block must be put in a dict where the key will be the filename of the
 apache2__host_modules_enabled: ['access_compat.load', 'alias.conf', 'alias.load', 'auth_basic.load', 'authn_core.load', 'authn_file.load', 'authz_core.load', 'authz_host.load', 'authz_user.load', 'headers.load', 'autoindex.conf', 'autoindex.load', 'deflate.conf', 'deflate.load', 'dir.conf', 'dir.load', 'env.load', 'filter.load', 'mime.conf', 'mime.load', 'mpm_prefork.conf', 'mpm_prefork.load', 'negotiation.conf', 'negotiation.load', 'php5.conf', 'php5.load', 'proxy.load', 'proxy_http.load', 'setenvif.conf', 'setenvif.load', 'ssl.load', 'ssl.conf', 'socache_shmcb.load']
 ```
 
+  * Default debian virtual host
+
+```
+apache2__host_virtual_hosts:
+  000-default:
+    server_name: www.example.com
+    server_admin: webmaster@localhost
+    document_root: /var/www/html
+    sections:
+      - type: directory
+        path: /var/www/html
+        directives:
+          - require: all granted
+    error_log: '{{ apache2__log_directory }}/error.log'
+    custom_log: '{{ apache2__log_directory }}/access.log combined'
+```
+
+
   * Simple permanent redirect from HTTP to HTTPs
 
 ```

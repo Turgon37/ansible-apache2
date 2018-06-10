@@ -1,13 +1,13 @@
 ---
 - name: Ensure systemd override directory is created
   file:
-    path:  '{{ apache2__systemd_override_options_dir }}'
+    path: '{{ apache2__systemd_override_options_dir }}'
     state: directory
   when: ansible_service_mgr == 'systemd'
 
 - name: Install systemd options override file
   template:
-    src:  systemd.service.d.j2
+    src: systemd.service.d.j2
     dest: '{{ apache2__systemd_override_options_dir }}/override.conf'
   when: ansible_service_mgr == 'systemd'
   notify: ['restart-apache2']
@@ -15,31 +15,32 @@
 
 - name: Reload systemd
   systemd:
-    daemon_reload: yes
+    daemon_reload: true
   when: ansible_service_mgr == 'systemd' and _apache2__service is changed
 
 - meta: flush_handlers
 
 - name: Ensure Apache2 daemon is started and enabled on boot
   service:
-    name:    '{{ apache2__service_name }}'
+    name: '{{ apache2__service_name }}'
     enabled: '{{ apache2__service_enabled|bool }}'
-    state:   "{{ apache2__service_enabled|bool|ternary('started', 'stopped') }}"
+    state: "{{ apache2__service_enabled|bool|ternary('started', 'stopped') }}"
 
 # restart feature
 - name: Test if Apache2 need to be restart
   stat:
     path: '{{ apache2__service_restart_stamp_file }}'
   register: _apache2__restart_file
-  check_mode: False
+  check_mode: false
 
 - name: Trigger restart of Apache2 if needed and allowed
   command: /bin/true
-  when: apache2__service_enabled|bool and apache2__service_restartable|bool and _apache2__restart_file.stat.exists
-  notify: [ 'restart-apache2' ]
+  when: apache2__service_enabled|bool
+    and apache2__service_restartable|bool and _apache2__restart_file.stat.exists
+  notify: ['restart-apache2']
 
 - name: Remove stamp file if Apache2 daemon is disabled
   file:
-    path:  '{{ apache2__service_restart_stamp_file }}'
+    path: '{{ apache2__service_restart_stamp_file }}'
     state: absent
   when: not apache2__service_enabled|bool

@@ -12,18 +12,23 @@
       skip: true
   tags: ['always']
 
-- import_tasks: init.yml
+- name: Import init tasks
+  import_tasks: init.yml
   tags: ['always']
 
-- import_tasks: install.yml
+- name: Import install tasks
+  import_tasks: install.yml
   tags: ['apache2', 'apache2-install']
 
-- import_tasks: configure.yml
+- name: Import configure tasks
+  import_tasks: configure.yml
   tags: ['apache2', 'apache2-configure']
 
-- import_tasks: service.yml
+- name: Import service tasks
+  import_tasks: service.yml
   tags: ['apache2', 'apache2-service']
 
-- include_tasks: facts.yml
+- name: Optionally include facts tasks
+  include_tasks: facts.yml
   when: apache2__facts|bool
   tags: ['apache2', 'apache2-facts']
