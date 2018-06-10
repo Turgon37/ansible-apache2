@@ -3,7 +3,7 @@
   hosts: all
   any_errors_fatal: true
   roles:
-    - role: apache2
+    - role: ansible-apache2
   vars:
     apache2__modules_enabled:
       - authz_core
