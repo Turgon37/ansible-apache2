@@ -22,7 +22,7 @@
     apache2__modules_enabled
   notify: ['restart-apache2']
 
-- name: Check availability of needed Apache modules
+- name: Fail is an enabled module is not available
   fail:
     msg: 'The apache module {{ item }} is not available'
   with_items: '{{ apache2__modules_enabled }}'
@@ -36,24 +36,26 @@
     src: '{{ apache2__available_modules_include_directory }}/{{ item }}'
     dest: '{{ apache2__enabled_modules_include_directory }}/{{ item }}'
     state: link
-  with_items: >
-    {{ _apache2__available_modules.files
+  with_items:
+    "{{ _apache2__available_modules.files
       |map(attribute='path')
         |map('basename')
           |select('match',
-                  '^('~apache2__modules_enabled|join('|')~')\\.(conf|load)$')
-          |sort|list }}
+                  '^('~apache2__modules_enabled|join('|')~')\\.(conf|load)')
+            |sort
+              |list }}"
   when: item|regex_replace('(\.load|\.conf)$', '') in apache2__modules_enabled
-    and item not in
-      _apache2__enabled_modules.files|map(attribute='path')|map('basename')|list
+    and item not in _apache2__enabled_modules.files
+                      |map(attribute='path')
+                        |map('basename')
+                          |list
   notify: ['restart-apache2']
 
 - name: Template modules configuration that must be override
   template:
     src: '{{ item }}'
-    dest: >
-      {{ apache2__available_modules_include_directory }}/
-      {{ item|basename|replace('.j2', '') }}
+    dest: "{{ apache2__available_modules_include_directory }}/\
+      {{ item|basename|replace('.j2', '') }}"
   with_fileglob:
     - templates/modules.conf/*.j2
-  when: item|basename|replace('.conf.j2', '') in apache2__modules_enabled
+  when: item|basename|replace('.conf.j2', '') in apache2__modules_enabled|list

@@ -52,12 +52,10 @@
 
 - name: Enable wanted Apache sites.
   file:
-    src: >
-      {{ apache2__available_sites_include_directory }}/
-      {{ item|replace(' ', '_') }}.conf
-    dest: >
-      {{ apache2__enabled_sites_include_directory }}/
-      {{ item|replace(' ', '_') }}.conf
+    src: "{{ apache2__available_sites_include_directory }}/\
+      {{ item|replace(' ', '_') }}.conf"
+    dest: "{{ apache2__enabled_sites_include_directory }}/\
+      {{ item|replace(' ', '_') }}.conf"
     force: '{{ ansible_check_mode }}'
     state: link
   with_items: '{{ apache2__virtual_hosts.keys()|list }}'

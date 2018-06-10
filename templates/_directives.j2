@@ -6,7 +6,7 @@
  #}
 {%- macro directive(line) -%}
 {%- set name = (line.keys()|list)[0] -%}
-{%- set value = line.values()[0] -%}
+{%- set value = (line.values()|list)[0] -%}
 {%-   if name == 'options' -%}
 Options {{ value if value is string else value|join(' ') }}
 {%-   elif name == 'allow_override' -%}

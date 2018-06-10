@@ -9,10 +9,10 @@
 
 - name: Create apache2__version variable
   set_fact:
-    _apache2__version: >
-      {{ _apache2__version_raw.stdout.split()[2].split('/')[1]
+    _apache2__version:
+      "{{ _apache2__version_raw.stdout.split()[2].split('/')[1]|trim
       if _apache2__version_raw is not skipped
-      else ansible_local.apache2.version_full }}
+      else ansible_local.apache2.version_full }}"
 
 - name: "Ensure service group '{{ apache2__service_group }}' is present"
   group:

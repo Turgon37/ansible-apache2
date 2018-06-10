@@ -27,8 +27,8 @@
 - name: Compute virtualhost final path
   set_fact:
     _apache2__virtualhost_path:
-      "{{ _apache2__available_sites_include_directory }}/
-        {{ apache2__virtualhost.name|replace(' ', '_') }}.conf"
+      "{{ _apache2__available_sites_include_directory }}/\
+      {{ apache2__virtualhost.name|replace(' ', '_') }}.conf"
   tags: ['always']
 
 # Ensure required folder before the full apache2 role is applied
