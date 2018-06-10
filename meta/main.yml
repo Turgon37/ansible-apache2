@@ -1,6 +1,6 @@
 galaxy_info:
   author: Pierre GINDRAUD
-  description: This role configure Apache2 server
+  description: This role install and configure Apache2 webserver
   license: MIT
   min_ansible_version: 2.4
   platforms:
@@ -11,5 +11,6 @@ galaxy_info:
   galaxy_tags:
     - apache
     - web
+    - webserver
 
 dependencies: []
