@@ -15,14 +15,14 @@ apache2__packages_names:
 
 ### SERVICE CONFIGURATION
 # ---------------------------------------
-# The name of the systemd mariadb service
+# The name of the systemd apache service
 apache2__service_name: apache2
 
-# If true the mariadb service will be started and enabled
+# If true the apache service will be started and enabled
 apache2__service_enabled: true
 
 # If this is set to true,
-# ansible will automatically restart mariadb daemon on changes
+# ansible will automatically restart apache daemon on changes
 apache2__service_restartable: true
 
 # Path to the must restart stamp file
