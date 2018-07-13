@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: apache2
   author: Pierre GINDRAUD
   description: This role install and configure Apache2 webserver
   license: MIT
