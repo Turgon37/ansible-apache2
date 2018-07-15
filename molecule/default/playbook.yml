@@ -8,3 +8,15 @@
     apache2__modules_enabled:
       - authz_core
       - mpm_prefork
+    apache2__host_virtual_hosts:
+      000-default:
+        server_name: www.example.com
+        server_admin: webmaster@localhost
+        document_root: /var/www/html
+        sections:
+          - type: directory
+            path: /var/www/html
+            directives:
+              - require: all granted
+        error_log: '{{ apache2__log_directory }}/error.log'
+        custom_log: '{{ apache2__log_directory }}/access.log combined'
