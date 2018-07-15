@@ -83,6 +83,7 @@
     path: "{{ apache2__virtualhost['document_root'] }}"
     owner: "{{ apache2__virtualhost['document_root_user']|d(omit) }}"
     group: "{{ apache2__virtualhost['document_root_group']|d(omit) }}"
+    mode: "{{ apache2__virtualhost['document_root_mode']|d(omit) }}"
     state: directory
   when: apache2__virtualhost['document_root'] is defined
   notify: ['restart-apache2']

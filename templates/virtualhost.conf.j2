@@ -20,7 +20,7 @@
   ServerAlias {{ vhost.server_alias }}
 {% endif %}
 
-{% if vhost.https is defined and (vhost.https.enabled | d(True) | bool)  %}
+{% if vhost.https is defined and (vhost.https.enabled|d(true)|bool)  %}
   <IfModule ssl_module>
     SSLEngine on
     SSLCertificateFile {{ vhost.https.certificate_file }}
