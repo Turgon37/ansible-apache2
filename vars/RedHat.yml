@@ -1,0 +1,5 @@
+---
+
+apache2__packages_names:
+  - "apache2{{ (apache2__version != 'latest')|ternary('-'~apache2__version, '') }}"
+  - "apache2-utils{{ (apache2__version != 'latest')|ternary('-'~apache2__version, '') }}"

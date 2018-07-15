@@ -8,9 +8,10 @@ apache2__facts: true
 # Choose the monitoring backend to configure (if available)
 # apache2__monitoring:
 
-# The name of the apache2 package
-apache2__packages_names:
-  - apache2
+
+### INSTALL CONFIGURATION
+# The apache2 version to install (as the ones available in os repositories)
+apache2__version: latest
 
 
 ### SERVICE CONFIGURATION
@@ -54,7 +55,7 @@ apache2__service_group: www-data
 apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
 
 # List of module required by monitoring virtual host
-apache2__monitoring_modules:
+apache2__monitoring_modules_enabled:
   - authz_host
   - status
 
@@ -286,21 +287,21 @@ apache2__default_sections:
 
 ## Apache modules
 # This variable is intended to be used in Ansible’s global inventory.
-apache2__global_modules_enabled: []
+apache2__modules_enabled_global: []
 
 # This variable is intended to be used in a host inventory group of Ansible
 # (only one host group is supported).
-apache2__group_modules_enabled: []
+apache2__modules_enabled_group: []
 
 # This variable is intended to be used in the inventory of hosts.
-apache2__host_modules_enabled: []
+apache2__modules_enabled_host: []
 
 # Combine all enabled mods
-apache2__modules_enabled: '{{ apache2__global_modules_enabled
-    |union(apache2__group_modules_enabled)
-    |union(apache2__host_modules_enabled)
+apache2__modules_enabled: '{{ apache2__modules_enabled_global
+    |union(apache2__modules_enabled_group)
+    |union(apache2__modules_enabled_host)
     |union(
-      apache2__monitoring_modules if apache2__enable_monitoring_vhost else []
+      apache2__monitoring_modules_enabled if apache2__enable_monitoring_vhost else []
     )
   }}'
 
@@ -310,19 +311,19 @@ apache2__modules_enabled: '{{ apache2__global_modules_enabled
 apache2__purge_virtual_hosts: true
 
 # This variable is intended to be used in Ansible’s global inventory.
-apache2__global_virtual_hosts: {}
+apache2__virtual_hosts_global: {}
 
 # This variable is intended to be used in a host inventory group of Ansible
 # (only one host group is supported).
-apache2__group_virtual_hosts: {}
+apache2__virtual_hosts_group: {}
 
 # This variable is intended to be used in the inventory of hosts.
-apache2__host_virtual_hosts: {}
+apache2__virtual_hosts_host: {}
 
 # Combned vhosts dicts
-apache2__virtual_hosts: '{{ apache2__global_virtual_hosts
-    |combine(apache2__group_virtual_hosts)
-    |combine(apache2__host_virtual_hosts)
+apache2__virtual_hosts: '{{ apache2__virtual_hosts_global
+    |combine(apache2__virtual_hosts_group)
+    |combine(apache2__virtual_hosts_host)
     |combine(
       apache2__monitoring_virtual_hosts if apache2__enable_monitoring_vhost
       else {}
