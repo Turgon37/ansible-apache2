@@ -17,6 +17,10 @@ This roles configures an instance of Apache2 daemon.
 
 Require Ansible >= 2.4
 
+### Dependencies
+
+If you use the zabbix monitoring profile you will need the role [ansible-zabbix-agent](https://github.com/Turgon37/ansible-zabbix-agent)
+
 ## OS Family
 
 This role is available for Debian
@@ -30,6 +34,9 @@ At this day the role can be used to :
   * create virtualhosts configurations
   * manage enabled modules
   * override some modules configurations
+  * monitoring items for
+    * Zabbix
+  * [local facts](#facts)
 
 ## Configuration
 
@@ -120,6 +127,13 @@ Each vhost block must be put in a dict where the key will be the filename of the
 | https.ca_certificate_file   | string                        | The path to the CA certificate file                                                                                                                                          |
 | https.crl_path              | string                        | The path to the CRL folder                                                                                                                                                   |
 | https.crl_file              | string                        | The path to the CRL file                                                                                                                                                     |
+
+## Facts
+
+By default the local fact are installed and expose the following variables :
+
+* ```ansible_local.apache2.version_full```
+* ```ansible_local.apache2.version_major```
 
 
 ## Example

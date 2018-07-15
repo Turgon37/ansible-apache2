@@ -28,6 +28,11 @@
   import_tasks: service.yml
   tags: ['apache2', 'apache2-service']
 
+- name: Optionally import monitoring tasks
+  include_tasks: 'monitoring/{{ apache2__monitoring }}.yml'
+  when: apache2__monitoring is defined
+  tags: ['apache2', 'apache2-monitoring']
+
 - name: Optionally include facts tasks
   include_tasks: facts.yml
   when: apache2__facts|bool

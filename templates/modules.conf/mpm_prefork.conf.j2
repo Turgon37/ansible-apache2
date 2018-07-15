@@ -1,0 +1,10 @@
+#
+# {{ ansible_managed }}
+#
+<IfModule mpm_prefork_module>
+  StartServers {{ apache2__module_mpm_prefork_start_servers|int }}
+  MinSpareServers {{ apache2__module_mpm_prefork_min_spare_servers|int }}
+  MaxSpareServers {{ apache2__module_mpm_prefork_max_spare_servers|int }}
+  MaxRequestWorkers {{ apache2__module_mpm_prefork_max_request_workers|int }}
+  MaxConnectionsPerChild {{ apache2__module_mpm_prefork_max_connections_per_child|int }}
+</IfModule>

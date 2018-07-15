@@ -43,7 +43,7 @@ Mutex file:{{ apache2__mutex_directory }} default
 
 ### Network configuration
 Timeout {{ apache2__timeout|int }}
-KeepAlive {{ macros.bool(apache2__keepalive) }}
+{{ directives.directive({'keepalive': apache2__keepalive}) }}
 MaxKeepAliveRequests {{ apache2__max_keepalive_requests|int }}
 KeepAliveTimeout {{ apache2__keepalived_timeout|int }}
 HostnameLookups {{ macros.bool(apache2__hostname_lookups) }}
@@ -70,7 +70,8 @@ LogFormat "{{ format }}" {{ alias }}
 {% endfor %}
 
 ### Directories configuration
-AccessFileName {{ apache2__access_filename }}
+{{ directives.directive({'access_file_name': apache2__access_filename}) }}
+{{ directives.directive({'add_default_charset': apache2__default_charset}) }}
 
 {% for sect in apache2__default_sections|d([])|list %}
 {{   sections.section(sect) }}

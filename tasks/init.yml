@@ -8,3 +8,4 @@
         ['Major', 'Minor', 'Min', 'Minimal', 'Prod',
          'ProductOnly', 'OS', 'Full']
       - apache2__trace_enable in [True, False, 'On', 'Off', 'extended']
+      - apache2__modules_enabled|intersect(['mpm_event', 'mpm_worker', 'mpm_prefork'])|length == 1

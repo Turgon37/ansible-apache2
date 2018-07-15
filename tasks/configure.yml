@@ -61,6 +61,26 @@
     mode: 0750
     state: directory
 
+- name: Create custom scripts directory
+  file:
+    path: '{{ item }}'
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+  with_items:
+    - '{{ apache2__custom_scripts_directory }}'
+
+- name: Install apache custom scripts
+  copy:
+    src: 'files/{{ item }}'
+    dest: '{{ apache2__custom_scripts_directory }}/{{ item }}'
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - apache2-server-status.py
+
 - name: Configure listen ports
   template:
     src: ports.conf.j2
