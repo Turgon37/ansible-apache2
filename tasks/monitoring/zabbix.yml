@@ -1,0 +1,18 @@
+---
+
+- name: Configure zabbix userparameters
+  include_role:
+    name: zabbix-agent
+    tasks_from: types/user_parameter
+  vars:
+    zabbix_agent__userparameter:
+      name: apache2
+      userparameters:
+        - key: apache2.server_status
+          command: >-
+            {{ apache2__custom_scripts_directory }}/apache2-server-status.py
+            --port {{ apache2__monitoring_port }}
+            --url {{ apache2__monitoring_url }}
+          comment: Get apache2 server status
+      state: present
+  tags: ['apache2', 'apache2-monitoring']

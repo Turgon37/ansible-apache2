@@ -2,19 +2,20 @@
 # {{ ansible_managed }}
 #
 
-{% for listen in apache2__listen_http|sort|unique|list %}
+{% for listen in apache2__listen_http|map('string')|unique|list %}
 Listen {{ listen }}
 {% endfor %}
 
 {% if apache2__listen_https|length %}
+{% set _apache2__listen_https = apache2__listen_https|map('string')|unique|list %}
 <IfModule ssl_module>
-{%   for listen in apache2__listen_https|sort|unique|list %}
+{%   for listen in _apache2__listen_https %}
   Listen {{ listen }}
 {%   endfor %}
 </IfModule>
 
 <IfModule mod_gnutls.c>
-{%   for listen in apache2__listen_https|sort|unique|list %}
+{%   for listen in _apache2__listen_https %}
   Listen {{ listen }}
 {%   endfor %}
 </IfModule>

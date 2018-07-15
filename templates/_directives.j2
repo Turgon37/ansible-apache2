@@ -1,3 +1,4 @@
+{%- import '_macros.j2' as macros -%}
 {#
  # Router for directives
  #
@@ -7,28 +8,34 @@
 {%- macro directive(line) -%}
 {%- set name = (line.keys()|list)[0] -%}
 {%- set value = (line.values()|list)[0] -%}
-{%-   if name == 'options' -%}
-Options {{ value if value is string else value|join(' ') }}
+{%-   if name == 'access_file_name' -%}
+AccessFileName {{ value }}
+{%-   elif name == 'add_default_charset' -%}
+AddDefaultCharset {{ macros.stringOrBool(value) }}
 {%-   elif name == 'allow_override' -%}
 AllowOverride {{ value if value is string else value|join(' ') }}
 {%-   elif name == 'allow_override_list' -%}
 AllowOverride {{ value if value is string else value|join(' ') }}
-{%-   elif name == 'require' -%}
-Require {{ value }}
+{%-   elif name == 'custom_log' -%}
+CustomLog {{ value }}
+{%-   elif name == 'document_root' -%}
+DocumentRoot {{ value }}
+{%-   elif name == 'error_log' -%}
+ErrorLog {{ value }}
 {%-   elif name == 'header' -%}
 <IfModule mod_headers.c>
 {%      for header in ([value] if value is string else value) %}
   Header {{ header }}
 {%      endfor %}
 </IfModule>
+{%-   elif name == 'keepalive' -%}
+KeepAlive {{ macros.bool(value) }}
+{%-   elif name == 'options' -%}
+Options {{ value if value is string else value|join(' ') }}
+{%-   elif name == 'require' -%}
+Require {{ value }}
 {%-   elif name == 'server_admin' -%}
 ServerAdmin {{ value }}
-{%-   elif name == 'document_root' -%}
-DocumentRoot {{ value }}
-{%-   elif name == 'error_log' -%}
-ErrorLog {{ value }}
-{%-   elif name == 'custom_log' -%}
-CustomLog {{ value }}
 {%-   elif name == 'set_handler' -%}
 SetHandler {{ value }}
 {%-   elif name == 'extra_parameters' -%}

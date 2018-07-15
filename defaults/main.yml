@@ -13,6 +13,9 @@ apache2__facts: true
 # The apache2 version to install (as the ones available in os repositories)
 apache2__version: latest
 
+# Where to place custom scripts
+apache2__custom_scripts_directory: /opt/apache2-scripts
+
 
 ### SERVICE CONFIGURATION
 # ---------------------------------------
@@ -54,6 +57,12 @@ apache2__service_group: www-data
 # load status module and create localhost available vhost to serve mod status
 apache2__enable_monitoring_vhost: '{{ apache2__monitoring is defined }}'
 
+# Url endpoint on which to serve server status
+apache2__monitoring_url: /apache-status
+
+# Port on which to serve server status
+apache2__monitoring_port: 8080
+
 # List of module required by monitoring virtual host
 apache2__monitoring_modules_enabled:
   - authz_host
@@ -64,10 +73,13 @@ apache2__monitoring_virtual_hosts:
   999-monitoring:
     hosts:
       - ip: 127.0.0.1
+        port: '{{ apache2__monitoring_port }}'
     server_name: localhost
+    directives:
+      - keepalive: false
     sections:
       - type: location
-        path: /apache-status
+        path: '{{ apache2__monitoring_url }}'
         directives:
           - set_handler: server-status
           - require: local
@@ -171,6 +183,7 @@ apache2__trace_enable: false
 # List of ports on which to listen for http connexion
 apache2__listen_http:
   - 80
+  - '{{ apache2__monitoring_port if apache2__enable_monitoring_vhost|bool else 80 }}'
 
 # List of ports on which to listen for https connexion
 apache2__listen_https:
@@ -261,7 +274,10 @@ apache2__options: None
 # directive.
 apache2__access_filename: .htaccess
 
-# List of directives sections name that can be applied to server/vhost level
+# Specify default charset for text/plain and text/html content types
+apache2__default_charset: true
+
+# List of directives sections name that can be applied to server/vhost level without directives subkey
 apache2__server_level_context_directives_name:
   - server_admin
   - document_root
@@ -285,6 +301,9 @@ apache2__default_sections:
     directives:
       - require: all denied
 
+
+### MODULES CONFIGURATION
+# ---------------------------------------
 ## Apache modules
 # This variable is intended to be used in Ansible’s global inventory.
 apache2__modules_enabled_global: []
@@ -329,3 +348,27 @@ apache2__virtual_hosts: '{{ apache2__virtual_hosts_global
       else {}
     )
   }}'
+
+## Status module configuration
+# Keep track of extended status information for each request
+apache2__module_status_extended_status: true
+
+# Determine if mod_status displays the first 63 characters of a request or
+# the last 63, assuming the request itself is greater than 63 chars.
+apache2__module_status_see_request_tail: false
+
+## Mpm_prefork module configuration
+# number of server processes to start
+apache2__module_mpm_prefork_start_servers: 5
+
+# minimum number of server processes which are kept spare
+apache2__module_mpm_prefork_min_spare_servers: 5
+
+# maximum number of server processes which are kept spare
+apache2__module_mpm_prefork_max_spare_servers: 10
+
+# maximum number of server processes allowed to start
+apache2__module_mpm_prefork_max_request_workers: 150
+
+# maximum number of requests a server process serves
+apache2__module_mpm_prefork_max_connections_per_child: 0

@@ -50,7 +50,7 @@
       apache2__virtual_hosts.keys()|list
   notify: ['restart-apache2']
 
-- name: Enable wanted Apache sites.
+- name: Enable wanted Apache sites
   file:
     src: "{{ apache2__available_sites_include_directory }}/\
       {{ item|replace(' ', '_') }}.conf"

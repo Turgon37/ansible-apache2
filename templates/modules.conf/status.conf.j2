@@ -1,14 +1,10 @@
+{%- import '_macros.j2' as macros with context -%}
 #
 # {{ ansible_managed }}
 #
 <IfModule mod_status.c>
-  # Keep track of extended status information for each request
-  ExtendedStatus On
-
-  # Determine if mod_status displays the first 63 characters of a request or
-  # the last 63, assuming the request itself is greater than 63 chars.
-  # Default: Off
-  #SeeRequestTail On
+  ExtendedStatus {{ macros.bool(apache2__module_status_extended_status) }}
+  SeeRequestTail {{ macros.bool(apache2__module_status_see_request_tail) }}
 
   <IfModule mod_proxy.c>
     # Show Proxy LoadBalancer status in mod_status
