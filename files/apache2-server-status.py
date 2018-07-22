@@ -32,6 +32,7 @@ class ApacheException(Exception):
     """
     pass
 
+
 def apacheStatus(request, timeout):
     """Fetch apache status from http url
     """
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     # prepare request
     url = 'http://localhost:{port}{url}?auto'.format(**vars(args))
     if args.verbose:
-        print('call url '+url)
+        print('call url ' + url)
     request = urllib2.Request(url)
     if hasattr(args, 'username') and hasattr(args, 'password'):
         if args.verbose:
