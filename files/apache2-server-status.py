@@ -4,28 +4,26 @@ import argparse
 import base64
 import json
 import urllib2
-import re
 import sys
-import time
 
 # Map of apache worker status use in scoreboard
 apache_worker_status_map = {
-  '_': 'waiting',
-  'S': 'starting',
-  'R': 'reading',
-  'W': 'sending',
-  'K': 'keepalive',
-  'D': 'dns',
-  'C': 'closing',
-  'L': 'logging',
-  'G': 'gracefully',
-  'I': 'idle',
-  '.': 'free'
+    '_': 'waiting',
+    'S': 'starting',
+    'R': 'reading',
+    'W': 'sending',
+    'K': 'keepalive',
+    'D': 'dns',
+    'C': 'closing',
+    'L': 'logging',
+    'G': 'gracefully',
+    'I': 'idle',
+    '.': 'free'
 }
 
 # List of float items to format in json
 apache_float_keys = [
-  'BytesPerReq', 'ReqPerSec', 'BytesPerSec'
+    'BytesPerReq', 'ReqPerSec', 'BytesPerSec'
 ]
 
 
@@ -38,7 +36,7 @@ def apacheStatus(request, timeout):
     """Fetch apache status from http url
     """
     try:
-        answer = urllib2.urlopen(request, timeout=args.timeout)
+        answer = urllib2.urlopen(request, timeout=timeout)
     except (urllib2.HTTPError, urllib2.URLError) as e:
         raise ApacheException(str(e))
     status = answer.read()
@@ -49,7 +47,8 @@ def apacheStatus(request, timeout):
 # RETRIEVE INFORMATIONS
 if __name__ == '__main__':
     # Create parser
-    parser = argparse.ArgumentParser(description='Command line utility to query stats from apache status virtual host')
+    parser = argparse.ArgumentParser(description=('Command line utility to query stats '
+                                                  'from apache status virtual host'))
     parser.add_argument('-P', '--port', action='store', type=int,
                         dest='port', default=80,
                         help='The port on which to call web endpoint')
@@ -79,7 +78,7 @@ if __name__ == '__main__':
     if hasattr(args, 'username') and hasattr(args, 'password'):
         if args.verbose:
             sys.stdout.write('using basic auth')
-        base64string = base64.encodestring('{}:{}'.format(args.username, args.password)).strip()
+        base64string = base64.b64encode('{}:{}'.format(args.username, args.password)).strip()
         request.add_header("Authorization", "Basic {}".format(base64string))
 
     # execute query for status1
@@ -113,9 +112,9 @@ if __name__ == '__main__':
 
     # add up worker per status
     for worker_status in scoreboard:
-      if worker_status not in worker_count_per_status:
-        worker_count_per_status[worker_status] = 0
-      worker_count_per_status[worker_status] += 1
+        if worker_status not in worker_count_per_status:
+            worker_count_per_status[worker_status] = 0
+        worker_count_per_status[worker_status] += 1
 
     content['workers'] = dict(map(lambda x: (x, 0), apache_worker_status_map.values()))
     content['workers']['total'] = len(scoreboard)
@@ -134,7 +133,7 @@ if __name__ == '__main__':
     for item in apache_float_keys:
         try:
             content[item] = float(content[item])
-        except ValuError:
+        except ValueError:
             msg = "unable to format value '{}' of key {} as float".format(content[item], item)
             if 'error' in content:
                 content['error'] += ',' + msg
