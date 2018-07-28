@@ -115,7 +115,7 @@ apache2__enabled_sites_include_directory:
 # PidFile: The file in which the server should record its process
 # identification number when it starts.
 # This needs to be set in /etc/apache2/envvars
-apache2__pidfile: /var/run/apache2/apache2.pid
+apache2__service_pidfile: /var/run/apache2/apache2.pid
 
 # The accept serialization lock file MUST BE STORED ON A LOCAL DISK.
 apache2__mutex_directory: /var/lock/apache2
