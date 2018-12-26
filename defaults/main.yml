@@ -10,8 +10,12 @@ apache2__facts: true
 
 
 ### INSTALL CONFIGURATION
+# ---------------------------------------
 # The apache2 version to install (as the ones available in os repositories)
 apache2__version: latest
+
+# List of packages to install
+# apache2__packages_names:
 
 # Where to place custom scripts
 apache2__custom_scripts_directory: /opt/apache2-scripts

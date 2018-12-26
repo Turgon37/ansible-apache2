@@ -15,11 +15,10 @@
 - name: Remove unwanted availables sites
   file:
     state: absent
-    path: '{{ item.path }}'
-  with_items: '{{ _apache2__available_sites.files }}'
+    path: '{{ item }}'
+  with_items: "{{ _apache2__available_sites.files|map(attribute='path')|list }}"
   when: apache2__purge_virtual_hosts|bool
-        and item.path|basename|replace('.conf', '') not in
-        apache2__virtual_hosts.keys()|list
+        and item|basename|replace('.conf', '') not in apache2__virtual_hosts.keys()|list
   notify: ['restart-apache2']
 
 - name: Setup availables sites
@@ -42,22 +41,19 @@
 
 - name: Disable all unwanted Apache sites
   file:
-    path: '{{ item.path }}'
+    path: '{{ item }}'
     state: absent
-  with_items: '{{ _apache2__enabled_sites.files }}'
+  with_items: "{{ _apache2__enabled_sites.files|map(attribute='path')|list }}"
   when: apache2__purge_virtual_hosts
-    and item.path|basename|replace('.conf', '') not in
-      apache2__virtual_hosts.keys()|list
+    and item|basename|replace('.conf', '') not in apache2__virtual_hosts.keys()|list
   notify: ['restart-apache2']
 
 - name: Enable wanted Apache sites
   file:
-    src: "{{ apache2__available_sites_include_directory }}/\
-      {{ item|replace(' ', '_') }}.conf"
-    dest: "{{ apache2__enabled_sites_include_directory }}/\
-      {{ item|replace(' ', '_') }}.conf"
+    src: "{{ apache2__available_sites_include_directory }}/{{ item|replace(' ', '_') }}.conf"
+    dest: "{{ apache2__enabled_sites_include_directory }}/{{ item|replace(' ', '_') }}.conf"
     force: '{{ ansible_check_mode }}'
     state: link
   with_items: '{{ apache2__virtual_hosts.keys()|list }}'
-  when: apache2__virtual_hosts[item]['enabled']|d(True)|bool
+  when: apache2__virtual_hosts[item]['enabled']|d(true)|bool
   notify: ['restart-apache2']

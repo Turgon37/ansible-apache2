@@ -12,6 +12,15 @@
     file_type: any
   register: _apache2__enabled_modules
 
+- name: Fail if an enabled module is not available
+  fail:
+    msg: 'The apache module {{ item }} is not available'
+  with_items: '{{ apache2__modules_enabled }}'
+  when: item not in
+    _apache2__available_modules.files
+      |map(attribute='path')|map('basename')
+        |map('regex_replace', '\.load$', '')|list
+
 - name: Disable all unwanted Apache modules
   file:
     path: '{{ item }}'
@@ -21,15 +30,6 @@
   when: item|basename|regex_replace('\.(load|conf)$', '') not in
     apache2__modules_enabled
   notify: ['restart-apache2']
-
-- name: Fail is an enabled module is not available
-  fail:
-    msg: 'The apache module {{ item }} is not available'
-  with_items: '{{ apache2__modules_enabled }}'
-  when: item not in
-    _apache2__available_modules.files
-      |map(attribute='path')|map('basename')
-        |map('regex_replace', '\.load$', '')|list
 
 - name: Enable wanted Apache modules
   file:

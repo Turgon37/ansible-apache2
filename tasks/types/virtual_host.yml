@@ -5,6 +5,7 @@
     that:
       - apache2__virtualhost is defined
       - apache2__virtualhost.name is defined
+      - apache2__virtualhost.server_name is defined
     msg: >
       apache2__virtualhost must be defined with specifications and
       apache2__virtualhost.name must contains the name of the file

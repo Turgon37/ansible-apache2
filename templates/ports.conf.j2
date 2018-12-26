@@ -1,8 +1,6 @@
-#
-# {{ ansible_managed }}
-#
+{{ ansible_managed|comment(decoration='# ') }}
 
-{% for listen in apache2__listen_http|map('string')|unique|list %}
+{% for listen in apache2__listen_http|map('string')|unique|sort|list %}
 Listen {{ listen }}
 {% endfor %}
 

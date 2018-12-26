@@ -17,6 +17,7 @@
   systemd:
     daemon_reload: true
   when: ansible_service_mgr == 'systemd' and _apache2__service is changed
+  changed_when: true
 
 - meta: flush_handlers
 

@@ -1,9 +1,7 @@
 {%- import '_macros.j2' as macros with context -%}
 {%- import '_sections.j2' as sections -%}
 {%- import '_directives.j2' as directives -%}
-#
-# {{ ansible_managed }}
-#
+{{ ansible_managed|comment(decoration='# ') }}
 
 # It is split into several files forming the configuration hierarchy outlined
 # below, all located in the /etc/apache2/ directory:
